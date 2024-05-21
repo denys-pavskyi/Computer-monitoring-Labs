@@ -7,8 +7,8 @@ import * as L from 'leaflet';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  //map: L.Map;
   map: any;
+  markers: L.Marker[] = [];
 
   constructor() { }
 
@@ -18,8 +18,8 @@ export class MapComponent implements OnInit {
 
   private initMap(): void {
     this.map = L.map('map', {
-      center: [ 51.505, -0.09 ],
-      zoom: 13
+      center: [50.4, 30.5], // Center on Kyiv, Ukraine
+      zoom: 9
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -27,7 +27,41 @@ export class MapComponent implements OnInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    const marker = L.marker([51.5, -0.09]).addTo(this.map);
-    marker.bindPopup('A basic marker');
+    this.map.on('click', this.onMapClick.bind(this));
+  }
+
+  private onMapClick(e: any): void {
+    const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
+    marker.bindPopup(this.createPopupContent(marker)).openPopup();
+    this.markers.push(marker);
+  }
+
+  private createPopupContent(marker: L.Marker): HTMLElement {
+    const div = L.DomUtil.create('div', 'popup-content');
+    const title = L.DomUtil.create('h4', '', div);
+    title.innerHTML = 'Marker';
+
+    const deleteButton = L.DomUtil.create('button', 'delete-button', div);
+    deleteButton.innerHTML = 'Видалити';
+    deleteButton.onclick = () => {
+      this.removeMarker(marker);
+      this.map.closePopup();
+    };
+
+    const detailsButton = L.DomUtil.create('button', 'details-button', div);
+    detailsButton.innerHTML = 'Детальніше';
+    detailsButton.onclick = () => {
+      alert('More details about this marker');
+    };
+
+    return div;
+  }
+
+  private removeMarker(marker: L.Marker): void {
+    this.map.removeLayer(marker);
+    const index = this.markers.indexOf(marker);
+    if (index > -1) {
+      this.markers.splice(index, 1);
+    }
   }
 }
