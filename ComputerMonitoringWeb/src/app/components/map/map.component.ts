@@ -1,5 +1,6 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
+import { Point } from '../../../models/point';
 
 @Component({
   selector: 'app-map',
@@ -33,11 +34,10 @@ export class MapComponent implements OnInit {
   }
 
   private onMapClick(e: any): void {
-    const marker = L.marker([e.latlng.lat, e.latlng.lng], {icon: this.customIcon}).addTo(this.map);
+    const marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: this.customIcon }).addTo(this.map);
     marker.bindPopup(this.createPopupContent(marker)).openPopup();
     this.markers.push(marker);
   }
-
 
   private initCustomIcon(): void {
     this.customIcon = L.icon({
@@ -51,21 +51,21 @@ export class MapComponent implements OnInit {
   private createPopupContent(marker: L.Marker): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const title = L.DomUtil.create('h4', '', div);
-    title.innerHTML = 'Marker';
-  
+    title.innerHTML = 'New marker';
+
     const deleteButton = L.DomUtil.create('button', 'delete-button', div);
     deleteButton.innerHTML = 'Видалити';
     deleteButton.onclick = () => {
       this.removeMarker(marker);
       this.map.closePopup();
     };
-  
+
     const detailsButton = L.DomUtil.create('button', 'details-button', div);
     detailsButton.innerHTML = 'Детальніше';
     detailsButton.onclick = () => {
       alert('More details about this marker');
     };
-  
+
     return div;
   }
 

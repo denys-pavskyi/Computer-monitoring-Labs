@@ -1,9 +1,10 @@
-body{
-    background-color:powderblue;
-    height: 99vh;
+body {
     margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 99vh;
 }
-
 
 .leaflet-popup-content-wrapper {
     background-color: #f9f9f9;
