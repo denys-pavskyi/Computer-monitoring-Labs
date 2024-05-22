@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 import { Point } from '../../../models/point';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-map',
@@ -13,6 +14,7 @@ export class MapComponent implements OnInit {
   map: any;
   markers: L.Marker[] = [];
   customIcon: L.Icon | any;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -24,7 +26,7 @@ export class MapComponent implements OnInit {
 
   private initMap(): void {
     this.map = L.map('map', {
-      center: [50.4, 30.5], // Center on Kyiv, Ukraine
+      center: [50.4, 30.5], // Kyiv, Ukraine
       zoom: 9
     });
 
@@ -46,7 +48,7 @@ export class MapComponent implements OnInit {
   }
 
   private loadPoints(): void {
-    this.http.get<Point[]>('http://127.0.0.1:5000/points').subscribe(points => {
+    this.http.get<Point[]>(this.apiUrl + '/points').subscribe(points => {
       points.forEach(point => {
         const marker = L.marker([point.cord1, point.cord2], { icon: this.customIcon }).addTo(this.map);
         marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
@@ -121,7 +123,7 @@ export class MapComponent implements OnInit {
       cord2: marker.getLatLng().lng
     };
 
-    this.http.post<Point>('/points', point).subscribe(savedPoint => {
+    this.http.post<Point>(this.apiUrl + '/points', point).subscribe(savedPoint => {
       marker.bindPopup(this.createExistingPopupContent(marker, savedPoint)).openPopup();
     });
   }
@@ -135,8 +137,8 @@ export class MapComponent implements OnInit {
   }
 
   private deletePoint(id: number): void {
-    this.http.delete(`/points/${id}`).subscribe(() => {
-      console.log(`Point with id ${id} deleted`);
+    this.http.delete(this.apiUrl + `/points/${id}`).subscribe(() => {
+      alert(`Point with id ${id} deleted`);
     });
   }
 }

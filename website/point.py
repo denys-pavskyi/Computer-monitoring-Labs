@@ -37,7 +37,7 @@ def get_points():
 @point.route('/points/<int:id>', methods=['GET'])
 def get_point(id):
     point = Point.query.get_or_404(id)
-    return jsonify(point)
+    return jsonify(point.to_dict())
 
 # Update a Point
 @point.route('/points/<int:id>', methods=['PUT'])

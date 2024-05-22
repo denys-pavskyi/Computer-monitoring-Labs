@@ -43,6 +43,15 @@
   color: #333;
 }
 
+.popup-content input.title-input {
+  margin-bottom: 10px;
+  padding: 5px;
+  width: calc(100% - 10px);
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
 .popup-content button {
   margin: 5px 5px 0 0;
   padding: 5px 10px;
@@ -70,4 +79,22 @@
 
 .popup-content .details-button:hover {
   background-color: #2980b9;
+}
+
+.popup-content .save-button {
+  background-color: #2ecc71;
+  color: white;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.popup-content .save-button:hover {
+  background-color: #27ae60;
+}
+
+.popup-content .save-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
 }
