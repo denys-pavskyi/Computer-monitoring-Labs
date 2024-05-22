@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
   map: any;
@@ -39,17 +39,31 @@ export class MapComponent implements OnInit {
   private createPopupContent(marker: L.Marker): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const title = L.DomUtil.create('h4', '', div);
-    title.innerHTML = 'Marker';
+    title.innerHTML = 'New marker';
 
-    const deleteButton = L.DomUtil.create('button', 'delete-button', div);
+    const deleteButton = L.DomUtil.create('button', '', div);
     deleteButton.innerHTML = 'Видалити';
+    deleteButton.style.margin = '5px 5px 0 0';
+    deleteButton.style.padding = '5px 10px';
+    deleteButton.style.border = 'none';
+    deleteButton.style.borderRadius = '3px';
+    deleteButton.style.cursor = 'pointer';
+    deleteButton.style.backgroundColor = '#e74c3c';
+    deleteButton.style.color = 'white';
     deleteButton.onclick = () => {
       this.removeMarker(marker);
       this.map.closePopup();
     };
 
-    const detailsButton = L.DomUtil.create('button', 'details-button', div);
+    const detailsButton = L.DomUtil.create('button', '', div);
     detailsButton.innerHTML = 'Детальніше';
+    detailsButton.style.margin = '5px 5px 0 0';
+    detailsButton.style.padding = '5px 10px';
+    detailsButton.style.border = 'none';
+    detailsButton.style.borderRadius = '3px';
+    detailsButton.style.cursor = 'pointer';
+    detailsButton.style.backgroundColor = '#3498db';
+    detailsButton.style.color = 'white';
     detailsButton.onclick = () => {
       alert('More details about this marker');
     };
