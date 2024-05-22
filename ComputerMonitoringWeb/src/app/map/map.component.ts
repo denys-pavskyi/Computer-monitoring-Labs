@@ -9,11 +9,13 @@ import * as L from 'leaflet';
 export class MapComponent implements OnInit {
   map: any;
   markers: L.Marker[] = [];
+  customIcon: L.Icon | any;
 
   constructor() { }
 
   ngOnInit(): void {
     this.initMap();
+    this.initCustomIcon();
   }
 
   private initMap(): void {
@@ -31,43 +33,39 @@ export class MapComponent implements OnInit {
   }
 
   private onMapClick(e: any): void {
-    const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
+    const marker = L.marker([e.latlng.lat, e.latlng.lng], {icon: this.customIcon}).addTo(this.map);
     marker.bindPopup(this.createPopupContent(marker)).openPopup();
     this.markers.push(marker);
+  }
+
+
+  private initCustomIcon(): void {
+    this.customIcon = L.icon({
+      iconUrl: '/assets/free-icon-map-location-5092916.png',
+      iconSize: [45, 45],
+      iconAnchor: [22.5, 45],
+      popupAnchor: [0, -45]
+    });
   }
 
   private createPopupContent(marker: L.Marker): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const title = L.DomUtil.create('h4', '', div);
-    title.innerHTML = 'New marker';
-
-    const deleteButton = L.DomUtil.create('button', '', div);
+    title.innerHTML = 'Marker';
+  
+    const deleteButton = L.DomUtil.create('button', 'delete-button', div);
     deleteButton.innerHTML = 'Видалити';
-    deleteButton.style.margin = '5px 5px 0 0';
-    deleteButton.style.padding = '5px 10px';
-    deleteButton.style.border = 'none';
-    deleteButton.style.borderRadius = '3px';
-    deleteButton.style.cursor = 'pointer';
-    deleteButton.style.backgroundColor = '#e74c3c';
-    deleteButton.style.color = 'white';
     deleteButton.onclick = () => {
       this.removeMarker(marker);
       this.map.closePopup();
     };
-
-    const detailsButton = L.DomUtil.create('button', '', div);
+  
+    const detailsButton = L.DomUtil.create('button', 'details-button', div);
     detailsButton.innerHTML = 'Детальніше';
-    detailsButton.style.margin = '5px 5px 0 0';
-    detailsButton.style.padding = '5px 10px';
-    detailsButton.style.border = 'none';
-    detailsButton.style.borderRadius = '3px';
-    detailsButton.style.cursor = 'pointer';
-    detailsButton.style.backgroundColor = '#3498db';
-    detailsButton.style.color = 'white';
     detailsButton.onclick = () => {
       alert('More details about this marker');
     };
-
+  
     return div;
   }
 
