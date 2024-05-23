@@ -47,6 +47,16 @@ export class MapComponent implements OnInit {
     });
   }
 
+  private getStreetName(lat: number, lon: number): Promise<string> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=uk`;
+    return this.http.get<any>(url).toPromise().then(response => {
+      const address = response.address;
+      const road = address.road || address.display_name || 'Unknown street';
+      const houseNumber = address.house_number || '';
+      return houseNumber ? `${road}, ${houseNumber}` : road;
+    }).catch(() => 'Unknown street');
+  }
+
   private loadPoints(): void {
     this.http.get<Point[]>(this.apiUrl + '/points').subscribe(points => {
       points.forEach(point => {
@@ -59,15 +69,20 @@ export class MapComponent implements OnInit {
 
   private onMapClick(e: any): void {
     const marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: this.customIcon }).addTo(this.map);
-    marker.bindPopup(this.createNewPopupContent(marker)).openPopup();
+    this.getStreetName(e.latlng.lat, e.latlng.lng).then(street => {
+      marker.bindPopup(this.createNewPopupContent(marker, street)).openPopup();
+    });
     this.markers.push(marker);
   }
 
-  private createNewPopupContent(marker: L.Marker): HTMLElement {
+  private createNewPopupContent(marker: L.Marker, street: string): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const titleInput = L.DomUtil.create('input', 'title-input', div);
     titleInput.type = 'text';
-    titleInput.placeholder = 'Enter title';
+    titleInput.placeholder = street || 'New marker';
+
+    const streetName = L.DomUtil.create('p', '', div);
+    streetName.innerHTML = `Street: ${street}`;
 
     const saveButton = L.DomUtil.create('button', 'save-button', div);
     const saveIcon = L.DomUtil.create('img', 'save-icon', saveButton);
@@ -78,7 +93,7 @@ export class MapComponent implements OnInit {
     saveButton.appendChild(saveIcon);
     saveButton.innerHTML += ' Save';
     saveButton.onclick = () => {
-      this.saveMarkerData(marker, titleInput.value);
+      this.saveMarkerData(marker, titleInput);
       this.map.closePopup();
     };
 
@@ -116,7 +131,12 @@ export class MapComponent implements OnInit {
     return div;
   }
 
-  private saveMarkerData(marker: L.Marker, title: string): void {
+  private saveMarkerData(marker: L.Marker, titleInput: HTMLInputElement): void {
+    
+    let title = titleInput.value.trim();
+    if(typeof title=='undefined' || !title){
+      title = titleInput.placeholder;
+    }
     const point: Point = {
       title: title,
       cord1: marker.getLatLng().lat,
