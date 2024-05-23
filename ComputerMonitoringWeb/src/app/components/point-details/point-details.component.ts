@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Point } from '../../../models/point';
+import { WaterStat } from '../../../models/water_stat';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WaterStat } from '../../../models/water_stat'; // Import the model
 
 @Component({
   selector: 'app-point-details',
@@ -28,8 +28,11 @@ export class PointDetailsComponent implements OnInit {
     'Економічний стан',
     'Стан здоров’я населення'
   ];
+  existingSensor: any = null;
+  selectedParameter: string = "";
+  parameters: string[] = [];
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) { }
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -57,10 +60,58 @@ export class PointDetailsComponent implements OnInit {
 
   private saveWaterStat(): void {
     const waterStat = new WaterStat(this.pointId);
-    this.http.post<WaterStat>(this.apiUrl + '/water_stats', waterStat).subscribe(response => {
+    this.http.post<WaterStat>(this.apiUrl + `/points/${this.pointId}/waterstat`, waterStat).subscribe(response => {
       console.log('Water stat saved:', response);
+      this.existingSensor = response;
+      this.parameters = ['epSecurity', 'sanChem', 'radiation'];
     });
   }
 
-  // Add similar methods for other sensor types
+  checkExistingSensor(): void {
+    switch (this.selectedSensorType) {
+      case 'Стан водних ресурсів':
+        this.http.get<WaterStat>(this.apiUrl + `/points/${this.pointId}/waterstat`).subscribe(response => {
+          this.existingSensor = response;
+          this.parameters = ['epSecurity', 'sanChem', 'radiation'];
+        }, error => {
+          this.existingSensor = null;
+        });
+        break;
+      // Add cases for other sensor types
+      default:
+        console.error('Unknown sensor type');
+    }
+  }
+
+  saveParameter(): void {
+    if (!this.selectedParameter) return;
+
+    const url = this.apiUrl + `/points/${this.pointId}/waterstat/${this.existingSensor.id}`;
+    this.http.put(url, this.existingSensor).subscribe(response => {
+      console.log(`${this.selectedParameter} updated:`, response);
+    });
+  }
+
+  deleteParameter(): void {
+    if (!this.selectedParameter) return;
+
+    this.existingSensor[this.selectedParameter] = 0; // Set value back to default
+    const url = this.apiUrl + `/points/${this.pointId}/waterstat/${this.existingSensor.id}`;
+
+    this.http.put(url, this.existingSensor).subscribe(response => {
+      console.log(`${this.selectedParameter} reset to default:`, response);
+    });
+  }
+
+  deleteSensor(): void {
+    const url = this.apiUrl + `/points/${this.pointId}/waterstat/${this.existingSensor.id}`;
+    this.http.delete(url).subscribe(() => {
+      console.log('Sensor deleted');
+      this.existingSensor = null;
+    });
+  }
+
+  goBackToMap(): void {
+    this.router.navigate(['/']);
+  }
 }
