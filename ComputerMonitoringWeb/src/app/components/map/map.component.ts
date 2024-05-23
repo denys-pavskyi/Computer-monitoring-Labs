@@ -123,7 +123,7 @@ export class MapComponent implements OnInit {
     };
 
     const detailsButton = L.DomUtil.create('button', 'details-button', div);
-    detailsButton.innerHTML = 'Детальніше';
+    detailsButton.innerHTML = 'Details';
     detailsButton.onclick = () => {
       this.router.navigate(['/point-details', point.id]);
     };
