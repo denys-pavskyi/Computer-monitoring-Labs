@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from .models import WaterStat
 from . import db
+from datetime import datetime
 
 waterstat = Blueprint('waterstat', __name__)
 
@@ -9,8 +10,11 @@ waterstat = Blueprint('waterstat', __name__)
 def create_waterstat_for_point(point_id):
     data = request.get_json()
     new_waterstat = WaterStat(
-        point_id=point_id, epSecurity=data.get('epSecurity'), sanChem=data.get('sanChem'),
-        radiation=data.get('radiation')
+        point_id=point_id
+        , epSecurity=data.get('epSecurity')
+        , sanChem=data.get('sanChem')
+        , radiation=data.get('radiation')
+        , date=datetime.now()
     )
     db.session.add(new_waterstat)
     db.session.commit()
@@ -18,8 +22,8 @@ def create_waterstat_for_point(point_id):
 
 @waterstat.route('/points/<int:point_id>/waterstat', methods=['GET'])
 def get_waterstat_for_point(point_id):
-    waterstat = WaterStat.query.filter_by(point_id=point_id).first_or_404()
-    return jsonify(waterstat.to_dict())
+    waterstats = WaterStat.query.filter_by(point_id=point_id).all()
+    return jsonify([waterstat.to_dict() for waterstat in waterstats])
 
 @waterstat.route('/points/<int:point_id>/waterstat/<int:waterstat_id>', methods=['PUT'])
 def update_waterstat_for_point(point_id, waterstat_id):
@@ -28,6 +32,7 @@ def update_waterstat_for_point(point_id, waterstat_id):
     waterstat.epSecurity = data.get('epSecurity', waterstat.epSecurity)
     waterstat.sanChem = data.get('sanChem', waterstat.sanChem)
     waterstat.radiation = data.get('radiation', waterstat.radiation)
+    waterstat.date = datetime.now()
     db.session.commit()
     return jsonify(waterstat.to_dict())
 

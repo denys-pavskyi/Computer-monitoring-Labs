@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from .models import HealthStat
 from . import db
+from datetime import datetime
 
 healthstat = Blueprint('healthstat', __name__)
 
@@ -9,8 +10,12 @@ healthstat = Blueprint('healthstat', __name__)
 def create_healthstat_for_point(point_id):
     data = request.get_json()
     new_healthstat = HealthStat(
-        point_id=point_id, medicalDemographic=data.get('medicalDemographic'), morbidity=data.get('morbidity'),
-        disability=data.get('disability'), physicalDevelopment=data.get('physicalDevelopment')
+        point_id=point_id
+        , medicalDemographic=data.get('medicalDemographic')
+        , morbidity=data.get('morbidity')
+        , disability=data.get('disability')
+        , physicalDevelopment=data.get('physicalDevelopment')
+        , date=datetime.now()
     )
     db.session.add(new_healthstat)
     db.session.commit()
@@ -18,8 +23,8 @@ def create_healthstat_for_point(point_id):
 
 @healthstat.route('/points/<int:point_id>/healthstat', methods=['GET'])
 def get_healthstat_for_point(point_id):
-    healthstat = HealthStat.query.filter_by(point_id=point_id).first_or_404()
-    return jsonify(healthstat.to_dict())
+    healthstats = HealthStat.query.filter_by(point_id=point_id).all()
+    return jsonify([healthstat.to_dict() for healthstat in healthstats])
 
 @healthstat.route('/points/<int:point_id>/healthstat/<int:healthstat_id>', methods=['PUT'])
 def update_healthstat_for_point(point_id, healthstat_id):
@@ -29,6 +34,7 @@ def update_healthstat_for_point(point_id, healthstat_id):
     healthstat.morbidity = data.get('morbidity', healthstat.morbidity)
     healthstat.disability = data.get('disability', healthstat.disability)
     healthstat.physicalDevelopment = data.get('physicalDevelopment', healthstat.physicalDevelopment)
+    healthstat.date = datetime.now()
     db.session.commit()
     return jsonify(healthstat.to_dict())
 

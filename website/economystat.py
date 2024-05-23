@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from .models import EconomyStat
 from . import db
+from datetime import datetime
 
 economystat = Blueprint('economystat', __name__)
 
@@ -9,8 +10,12 @@ economystat = Blueprint('economystat', __name__)
 def create_economystat_for_point(point_id):
     data = request.get_json()
     new_economystat = EconomyStat(
-        point_id=point_id, gdp=data.get('gdp'), freightTraffic=data.get('freightTraffic'),
-        passengerTraffic=data.get('passengerTraffic'), exportGoods=data.get('exportGoods'), importGoods=data.get('importGoods'), wages=data.get('wages')
+        point_id=point_id
+        , gdp=data.get('gdp')
+        , freightTraffic=data.get('freightTraffic')
+        , passengerTraffic=data.get('passengerTraffic')
+        , exportGoods=data.get('exportGoods')
+        , date=datetime.now()
     )
     db.session.add(new_economystat)
     db.session.commit()
@@ -18,8 +23,8 @@ def create_economystat_for_point(point_id):
 
 @economystat.route('/points/<int:point_id>/economystat', methods=['GET'])
 def get_economystat_for_point(point_id):
-    economystat = EconomyStat.query.filter_by(point_id=point_id).first_or_404()
-    return jsonify(economystat.to_dict())
+    economystats = EconomyStat.query.filter_by(point_id=point_id).all()
+    return jsonify([economystat.to_dict() for economystat in economystats])
 
 @economystat.route('/points/<int:point_id>/economystat/<int:economystat_id>', methods=['PUT'])
 def update_economystat_for_point(point_id, economystat_id):
@@ -29,8 +34,7 @@ def update_economystat_for_point(point_id, economystat_id):
     economystat.freightTraffic = data.get('freightTraffic', economystat.freightTraffic)
     economystat.passengerTraffic = data.get('passengerTraffic', economystat.passengerTraffic)
     economystat.exportGoods = data.get('exportGoods', economystat.exportGoods)
-    economystat.importGoods = data.get('importGoods', economystat.importGoods)
-    economystat.wages = data.get('wages', economystat.wages)
+    economystat.date = datetime.now()
     db.session.commit()
     return jsonify(economystat.to_dict())
 
