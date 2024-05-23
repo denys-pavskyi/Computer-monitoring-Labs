@@ -1,4 +1,5 @@
 from . import db
+from datetime import datetime
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import JSON
 
@@ -32,10 +33,9 @@ class AirStat(db.Model):
     no2 = db.Column(db.Float, nullable=True)
     so2 = db.Column(db.Float, nullable=True)
     co2 = db.Column(db.Float, nullable=True)
-    pb = db.Column(db.Float, nullable=True)
-    bens = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
@@ -45,8 +45,7 @@ class AirStat(db.Model):
             'no2': self.no2,
             'so2': self.so2,
             'co2': self.co2,
-            'pb': self.pb,
-            'bens': self.bens
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class WaterStat(db.Model):
@@ -54,15 +53,18 @@ class WaterStat(db.Model):
     epSecurity = db.Column(db.Float, nullable=True)
     sanChem = db.Column(db.Float, nullable=True)
     radiation = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
             'id': self.id,
+            'point_id': self.point_id,
             'epSecurity': self.epSecurity,
             'sanChem': self.sanChem,
-            'radiation': self.radiation
+            'radiation': self.radiation,
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class SoilStat(db.Model):
@@ -71,62 +73,61 @@ class SoilStat(db.Model):
     p2o5 = db.Column(db.Float, nullable=True)
     k20 = db.Column(db.Float, nullable=True)
     salinity = db.Column(db.Float, nullable=True)
-    chemPoll = db.Column(db.Float, nullable=True)
-    pH = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'point_id': self.point_id,
             'humus': self.humus,
             'p2o5': self.p2o5,
             'k20': self.k20,
             'salinity': self.salinity,
-            'chemPoll': self.chemPoll,
-            'pH': self.pH
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class RadiationStat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    shortDecay = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    mediumDecay = db.Column(MutableList.as_mutable(JSON), nullable=True)
+    shortDecay = db.Column(db.Float, nullable=True)
+    mediumDecay = db.Column(db.Float, nullable=True)
     air = db.Column(db.Float, nullable=True)
     water = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'point_id': self.point_id,
             'shortDecay': self.shortDecay,
             'mediumDecay': self.mediumDecay,
             'air': self.air,
-            'water': self.water
+            'water': self.water,
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class Waste(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    composition = db.Column(MutableList.as_mutable(JSON), nullable=True)
+    paper = db.Column(db.Float, nullable=True)
+    plastic = db.Column(db.Float, nullable=True)
+    metal = db.Column(db.Float, nullable=True)
+    product = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
-
-    def to_dict(self):
-        return {
-            'title': self.title,
-            'composition': self.composition
-        }
-
-class Waste(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    composition = db.Column(MutableList.as_mutable(JSON), nullable=True)
-
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
-            'title': self.title,
-            'composition': self.composition
+            'id': self.id,
+            'point_id': self.point_id,
+            'paper': self.paper,
+            'plastic': self.plastic,
+            'metal': self.metal,
+            'product': self.product,
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class EconomyStat(db.Model):
@@ -135,19 +136,19 @@ class EconomyStat(db.Model):
     freightTraffic = db.Column(db.Float, nullable=True)
     passengerTraffic = db.Column(db.Float, nullable=True)
     exportGoods = db.Column(db.Float, nullable=True)
-    importGoods = db.Column(db.Float, nullable=True)
-    wages = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'point_id': self.point_id,
             'gdp': self.gdp,
             'freightTraffic': self.freightTraffic,
             'passengerTraffic': self.passengerTraffic,
             'exportGoods': self.exportGoods,
-            'importGoods': self.importGoods,
-            'wages': self.wages
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class HealthStat(db.Model):
@@ -156,30 +157,38 @@ class HealthStat(db.Model):
     morbidity = db.Column(db.Float, nullable=True)
     disability = db.Column(db.Float, nullable=True)
     physicalDevelopment = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
+    point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False)
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'point_id': self.point_id,
             'medicalDemographic': self.medicalDemographic,
             'morbidity': self.morbidity,
             'disability': self.disability,
-            'physicalDevelopment': self.physicalDevelopment
+            'physicalDevelopment': self.physicalDevelopment,
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
 class EnergyStat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    water = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    electricity = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    gas = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    thermalEnergy = db.Column(MutableList.as_mutable(JSON), nullable=True)
+    water = db.Column(db.Float, nullable=True)
+    electricity = db.Column(db.Float, nullable=True)
+    gas = db.Column(db.Float, nullable=True)
+    thermalEnergy = db.Column(db.Float, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     point_id = db.Column(db.Integer, db.ForeignKey('point.id'), nullable=False, unique=True)
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'point_id': self.point_id,
             'water': self.water,
             'electricity': self.electricity,
             'gas': self.gas,
-            'thermalEnergy': self.thermalEnergy
+            'thermalEnergy': self.thermalEnergy,
+            'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }

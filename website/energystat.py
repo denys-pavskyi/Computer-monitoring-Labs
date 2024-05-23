@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from .models import EnergyStat
 from . import db
+from datetime import datetime
 
 energystat = Blueprint('energystat', __name__)
 
@@ -9,8 +10,12 @@ energystat = Blueprint('energystat', __name__)
 def create_energystat_for_point(point_id):
     data = request.get_json()
     new_energystat = EnergyStat(
-        point_id=point_id, water=data.get('water'), electricity=data.get('electricity'),
-        gas=data.get('gas'), thermalEnergy=data.get('thermalEnergy')
+        point_id=point_id
+        , water=data.get('water')
+        , electricity=data.get('electricity')
+        , gas=data.get('gas')
+        , thermalEnergy=data.get('thermalEnergy')
+        , date=datetime.now()
     )
     db.session.add(new_energystat)
     db.session.commit()
@@ -18,8 +23,8 @@ def create_energystat_for_point(point_id):
 
 @energystat.route('/points/<int:point_id>/energystat', methods=['GET'])
 def get_energystat_for_point(point_id):
-    energystat = EnergyStat.query.filter_by(point_id=point_id).first_or_404()
-    return jsonify(energystat.to_dict())
+    energystats = EnergyStat.query.filter_by(point_id=point_id).all()
+    return jsonify([energystat.to_dict() for energystat in energystats])
 
 @energystat.route('/points/<int:point_id>/energystat/<int:energystat_id>', methods=['PUT'])
 def update_energystat_for_point(point_id, energystat_id):
@@ -29,6 +34,7 @@ def update_energystat_for_point(point_id, energystat_id):
     energystat.electricity = data.get('electricity', energystat.electricity)
     energystat.gas = data.get('gas', energystat.gas)
     energystat.thermalEnergy = data.get('thermalEnergy', energystat.thermalEnergy)
+    energystat.date = datetime.now()
     db.session.commit()
     return jsonify(energystat.to_dict())
 
