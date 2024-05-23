@@ -59,7 +59,7 @@ export class PointDetailsComponent implements OnInit {
     if (this.selectedSensorType in this.sensorParameters) {
       const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
       const newSensor = this.createSensorModel(this.selectedSensorType, this.pointId);
-      this.http.post(this.apiUrl + sensorEndpoint, newSensor).subscribe(response => {
+      this.http.post<any>(this.apiUrl + sensorEndpoint, newSensor).subscribe(response => {
         console.log(`${this.selectedSensorType} saved:`, response);
         this.existingSensor = response;
         this.parameters = this.sensorParameters[this.selectedSensorType];
@@ -72,7 +72,7 @@ export class PointDetailsComponent implements OnInit {
   checkExistingSensor(): void {
     if (this.selectedSensorType in this.sensorParameters) {
       const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
-      this.http.get(this.apiUrl + sensorEndpoint).subscribe(response => {
+      this.http.get<any>(this.apiUrl + sensorEndpoint).subscribe(response => {
         this.existingSensor = response;
         this.parameters = this.sensorParameters[this.selectedSensorType];
       }, error => {
@@ -121,19 +121,19 @@ export class PointDetailsComponent implements OnInit {
   private getSensorEndpoint(sensorType: string, sensorId?: number): string {
     switch (sensorType) {
       case 'Стан повітря':
-        return `/points/${this.pointId}/airstat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/airstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Стан водних ресурсів':
-        return `/points/${this.pointId}/waterstat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/waterstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Стан ґрунтів':
-        return `/points/${this.pointId}/soilstat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/soilstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Рівень радіації':
-        return `/points/${this.pointId}/radiationstat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/radiationstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Відходи':
-        return `/points/${this.pointId}/waste${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/waste${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Економічний стан':
-        return `/points/${this.pointId}/economystat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/economystat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       case 'Стан здоров’я населення':
-        return `/points/${this.pointId}/healthstat${sensorId ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/healthstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
       default:
         return '';
     }
