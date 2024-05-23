@@ -2,4 +2,9 @@
     <h2>Point Details</h2>
     <p>ID: {{ pointId }}</p>
     <p>Title: {{ pointTitle }}</p>
-</div>
+  
+    <h3>Select Sensor Type</h3>
+    <select [(ngModel)]="selectedSensorType">
+      <option *ngFor="let sensor of sensorTypes" [value]="sensor">{{ sensor }}</option>
+    </select>
+  </div>
