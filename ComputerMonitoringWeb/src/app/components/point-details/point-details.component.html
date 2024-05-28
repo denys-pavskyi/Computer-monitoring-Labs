@@ -1,5 +1,32 @@
-<div>
-    <h2>Point Details</h2>
-    <p>ID: {{ pointId }}</p>
-    <p>Title: {{ pointTitle }}</p>
+<div class="container">
+  <h2>Point Details</h2>
+  <p>ID: {{ pointId }}</p>
+  <p>Title: {{ pointTitle }}</p>
+
+  <h3>Select Sensor Type</h3>
+  <select [(ngModel)]="selectedSensorType" (change)="checkExistingSensor()">
+    <option *ngFor="let sensor of sensorTypes" [value]="sensor">{{ sensor }}</option>
+  </select>
+
+  <button *ngIf="!existingSensor" (click)="saveSensorData()" class="save">Зберегти</button>
+
+  <div *ngIf="existingSensor" class="parameter-section">
+    <h3>Sensor Details</h3>
+    <button (click)="deleteSensor()" class="delete">Delete Sensor</button>
+
+    <h4>Select Parameter</h4>
+    <select [(ngModel)]="selectedParameter">
+      <option *ngFor="let param of parameters" [value]="param">{{ param }}</option>
+    </select>
+
+    <div *ngIf="selectedParameter" class="parameter-details">
+      <h4>{{ selectedParameter }}</h4>
+      <p>Current Value: {{ existingSensor[selectedParameter] }}</p>
+      <input [(ngModel)]="existingSensor[selectedParameter]" type="number" />
+      <button (click)="saveParameter()" class="save">Save</button>
+      <button (click)="deleteParameter()" class="delete">Delete Parameter</button>
+    </div>
+  </div>
+
+  <button (click)="goBackToMap()" class="back">Back to Map</button>
 </div>
