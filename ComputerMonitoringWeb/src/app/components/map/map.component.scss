@@ -1,9 +1,13 @@
 .map-container {
-  height: 650px;
+  height: 100%;
   #map {
     height: 100%;
     width: 100%;
   }
+}
+
+body{
+  background-color: #8697C4;
 }
 
 .header {
@@ -18,7 +22,7 @@
 
 .header-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   width: 100%;
   padding: 0 20px;
 }
@@ -26,7 +30,8 @@
 .left-section {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center; 
 }
 
 .popup-content {
