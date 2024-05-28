@@ -1,12 +1,18 @@
 export class RadiationStat {
-    id?: number;
-    shortDecay?: any;
-    mediumDecay?: any;
-    air?: number;
-    water?: number;
-    point_id: number;
-  
-    constructor(point_id: number) {
-      this.point_id = point_id;
-    }
+  id?: number;
+  shortDecay?: number;
+  mediumDecay?: number;
+  air?: number;
+  water?: number;
+  date: Date;
+  point_id: number;
+
+  constructor(date: Date, point_id: number, shortDecay?: number, mediumDecay?: number, air?: number, water?: number) {
+    this.date = date;
+    this.point_id = point_id;
+    this.shortDecay = shortDecay;
+    this.mediumDecay = mediumDecay;
+    this.air = air;
+    this.water = water;
   }
+}

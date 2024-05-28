@@ -1,11 +1,16 @@
 export class WaterStat {
-    id?: number;
-    epSecurity: number = 0;
-    sanChem: number = 0;
-    radiation: number = 0;
-    point_id: number;
-  
-    constructor(point_id: number) {
-      this.point_id = point_id;
-    }
+  id?: number;
+  epSecurity?: number;
+  sanChem?: number;
+  radiation?: number;
+  date: Date;
+  point_id: number;
+
+  constructor(date: Date, point_id: number, epSecurity?: number, sanChem?: number, radiation?: number) {
+    this.date = date;
+    this.point_id = point_id;
+    this.epSecurity = epSecurity;
+    this.sanChem = sanChem;
+    this.radiation = radiation;
   }
+}

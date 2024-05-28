@@ -1,12 +1,18 @@
 export class Waste {
-    id?: number;
-    shortDecay?: number;
-    mediumDecay?: number;
-    air?: number;
-    water?: number;
-    point_id: number;
-  
-    constructor(point_id: number) {
-      this.point_id = point_id;
-    }
+  id?: number;
+  paper?: number;
+  plastic?: number;
+  metal?: number;
+  product?: number;
+  date: Date;
+  point_id: number;
+
+  constructor(date: Date, point_id: number, paper?: number, plastic?: number, metal?: number, product?: number) {
+    this.date = date;
+    this.point_id = point_id;
+    this.paper = paper;
+    this.plastic = plastic;
+    this.metal = metal;
+    this.product = product;
   }
+}
