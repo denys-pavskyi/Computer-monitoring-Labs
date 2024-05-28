@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from .models import Point, AirStat, WaterStat
+from .models import Point, AirStat, WaterStat, SoilStat, RadiationStat, Waste, EconomyStat, HealthStat, EnergyStat
 from . import db
 
 
@@ -20,9 +20,12 @@ def create_point():
 def get_points():
     airstat_filter = request.args.get("airstat", type=bool)
     waterstat_filter = request.args.get("waterstat", type=bool)
-    # airstat_filter = request.args.get("airstat", type=bool)
-    # airstat_filter = request.args.get("airstat", type=bool)
-    # airstat_filter = request.args.get("airstat", type=bool)
+    soilstat_filter = request.args.get("soilstat", type=bool)
+    radiationstat_filter = request.args.get("radiationstat", type=bool)
+    waste_filter = request.args.get("waste", type=bool)
+    economyStat_filter = request.args.get("economyStat", type=bool)
+    healthStat_filter = request.args.get("healthStat", type=bool)
+    energyStat_filter = request.args.get("energyStat", type=bool)
     query = db.session.query(Point)
 
     print(airstat_filter)
@@ -30,6 +33,18 @@ def get_points():
         query = query.join(AirStat, Point.id == AirStat.point_id)
     if waterstat_filter:
         query = query.join(WaterStat, Point.id == WaterStat.point_id)
+    if soilstat_filter:
+        query = query.join(SoilStat, Point.id == SoilStat.point_id)
+    if radiationstat_filter:
+        query = query.join(RadiationStat, Point.id == RadiationStat.point_id)
+    if waste_filter:
+        query = query.join(Waste, Point.id == Waste.point_id)
+    if economyStat_filter:
+        query = query.join(EconomyStat, Point.id == EconomyStat.point_id)
+    if healthStat_filter:
+        query = query.join(HealthStat, Point.id == HealthStat.point_id)
+    if energyStat_filter:
+        query = query.join(EnergyStat, Point.id == EnergyStat.point_id)
     points = query.all()
     return jsonify([point.to_dict() for point in points])
 
