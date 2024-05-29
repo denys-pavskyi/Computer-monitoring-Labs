@@ -5,19 +5,21 @@ import { Point } from '../../../models/point';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SensorGraphsComponent } from '../sensor-graphs/sensor-graphs.component';
 
 @Component({
   selector: 'app-point-details',
   templateUrl: './point-details.component.html',
   styleUrls: ['./point-details.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, SensorGraphsComponent]
 })
 export class PointDetailsComponent implements OnInit {
   pointId: number = -1;
   pointTitle: string = "";
   private apiUrl = environment.apiUrl;
   selectedSensorType: string = "";
+  selectedParameter: string = "";
   sensorTypes: string[] = [
     'Стан повітря',
     'Стан водних ресурсів',
@@ -37,10 +39,10 @@ export class PointDetailsComponent implements OnInit {
     'Стан здоров’я населення': ['medicalDemographic', 'morbidity', 'disability', 'physicalDevelopment']
   };
   existingSensor: any = null;
-  selectedParameter: string = "";
   parameters: string[] = [];
   sensorData: any[] = [];
   newSensorData: any = {};
+  showGraph: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
 
@@ -84,16 +86,24 @@ export class PointDetailsComponent implements OnInit {
   }
 
   updateSensorData(): void {
-    if (!this.newSensorData.date) return;
+    if (!this.newSensorData['date']) return;
 
     const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
-    this.newSensorData.point_id = this.pointId;
+    this.newSensorData['point_id'] = this.pointId;
 
     this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
       console.log(`${this.selectedSensorType} data updated:`, response);
       this.sensorData.push(response);
       this.initializeNewSensorData();
+      this.reloadSensorGraphs();
     });
+  }
+
+  reloadSensorGraphs(): void {
+    this.showGraph = false;
+    setTimeout(() => {
+      this.showGraph = true;
+    }, 100);
   }
 
   goBackToMap(): void {
@@ -119,5 +129,10 @@ export class PointDetailsComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  showSensorGraph(parameter: string): void {
+    this.selectedParameter = parameter;
+    this.showGraph = true;
   }
 }

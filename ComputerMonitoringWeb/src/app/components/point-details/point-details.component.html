@@ -12,16 +12,27 @@
 
   <div *ngIf="existingSensor !== null" class="sensor-table">
     <h3>{{ selectedSensorType }} Data</h3>
+
+    <div *ngIf="showGraph">
+      <app-sensor-graphs [pointId]="pointId" [sensorType]="selectedSensorType" [parameter]="selectedParameter" [sensorData]="sensorData"></app-sensor-graphs>
+    </div>
     <table *ngIf="sensorData.length > 0" class="styled-table">
       <thead>
         <tr>
           <th>Date</th>
-          <th *ngFor="let param of parameters">{{ param }}</th>
+          <th *ngFor="let param of parameters">
+            {{ param }}
+            <button (click)="showSensorGraph(param)" class="icon-button">
+              <span class="fa-rotate-270" style="display: inline-block;">
+                <i class="fas fa-chart-bar fa-flip-vertical"></i>
+              </span>
+            </button>
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let data of sensorData">
-          <td>{{ data.date | date: 'short' }}</td>
+          <td>{{ data['date'] | date: 'short' }}</td>
           <td *ngFor="let param of parameters">{{ data[param] }}</td>
         </tr>
       </tbody>
@@ -33,7 +44,7 @@
 
     <div class="update-form">
       <h3>Enter New Data</h3>
-      <label>Date: <input type="datetime-local" [(ngModel)]="newSensorData.date" /></label>
+      <label>Date: <input type="datetime-local" [(ngModel)]="newSensorData['date']" /></label>
       <label *ngFor="let param of parameters">
         {{ param }}: <input type="number" [(ngModel)]="newSensorData[param]" />
       </label>

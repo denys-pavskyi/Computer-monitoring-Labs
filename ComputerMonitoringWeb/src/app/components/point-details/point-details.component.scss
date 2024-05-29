@@ -122,3 +122,14 @@ button.back {
     margin-top: 10px;
   }
 }
+
+.icon-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 20px;
+  &:hover {
+    color: darken(#e74c3c, 10%);
+  }
+}
