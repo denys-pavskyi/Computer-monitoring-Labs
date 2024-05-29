@@ -28,17 +28,19 @@ export class PointDetailsComponent implements OnInit {
     'Стан здоров’я населення'
   ];
   sensorParameters: { [key: string]: string[] } = {
-    'Стан повітря': ['dust', 'no2', 'so2', 'co2', 'pb', 'bens'],
+    'Стан повітря': ['dust', 'no2', 'so2', 'co2'],
     'Стан водних ресурсів': ['epSecurity', 'sanChem', 'radiation'],
-    'Стан ґрунтів': ['humus', 'p2o5', 'k20', 'salinity', 'chemPoll', 'pH'],
+    'Стан ґрунтів': ['humus', 'p2o5', 'k20', 'salinity'],
     'Рівень радіації': ['shortDecay', 'mediumDecay', 'air', 'water'],
-    'Відходи': ['shortDecay', 'mediumDecay', 'air', 'water'],
-    'Економічний стан': ['gdp', 'freightTraffic', 'passengerTraffic', 'exportGoods', 'importGoods', 'wages'],
+    'Відходи': ['paper', 'plastic', 'metal', 'product'],
+    'Економічний стан': ['gdp', 'freightTraffic', 'passengerTraffic', 'exportGoods'],
     'Стан здоров’я населення': ['medicalDemographic', 'morbidity', 'disability', 'physicalDevelopment']
   };
   existingSensor: any = null;
   selectedParameter: string = "";
   parameters: string[] = [];
+  sensorData: any[] = [];
+  newSensorData: any = {};
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
 
@@ -55,62 +57,31 @@ export class PointDetailsComponent implements OnInit {
     });
   }
 
-  saveSensorData(): void {
-    if (this.selectedSensorType in this.sensorParameters) {
-      const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
-      const newSensor = this.createSensorModel(this.selectedSensorType, this.pointId);
-      this.http.post<any>(this.apiUrl + sensorEndpoint, newSensor).subscribe(response => {
-        console.log(`${this.selectedSensorType} saved:`, response);
-        this.existingSensor = response;
-        this.parameters = this.sensorParameters[this.selectedSensorType];
-      });
-    } else {
-      console.error('Unknown sensor type');
-    }
-  }
-
   checkExistingSensor(): void {
     if (this.selectedSensorType in this.sensorParameters) {
       const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
-      this.http.get<any>(this.apiUrl + sensorEndpoint).subscribe(response => {
-        this.existingSensor = response;
-        this.parameters = this.sensorParameters[this.selectedSensorType];
+      this.parameters = this.sensorParameters[this.selectedSensorType];
+      this.http.get<any[]>(this.apiUrl + sensorEndpoint).subscribe(response => {
+        this.sensorData = response;
+        this.existingSensor = response.length > 0;
       }, error => {
-        this.existingSensor = null;
+        this.existingSensor = false;
       });
     } else {
       console.error('Unknown sensor type');
     }
   }
 
-  saveParameter(): void {
-    if (!this.selectedParameter || !this.existingSensor) return;
-    console.log(this.existingSensor.id);
-    const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType, this.existingSensor.id);
-    this.http.put(this.apiUrl + sensorEndpoint, this.existingSensor).subscribe(response => {
-      console.log(`${this.selectedParameter} updated:`, response);
-    });
-  }
+  updateSensorData(): void {
+    if (!this.newSensorData.date) return;
 
-  deleteParameter(): void {
-    if (!this.selectedParameter || !this.existingSensor) return;
+    const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
+    this.newSensorData.point_id = this.pointId;
 
-    this.existingSensor[this.selectedParameter] = 0; // Set value back to default
-    const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType, this.existingSensor.id);
-
-    this.http.put(this.apiUrl + sensorEndpoint, this.existingSensor).subscribe(response => {
-      console.log(`${this.selectedParameter} reset to default:`, response);
-      this.selectedParameter = ''; // Close the parameter editing section
-    });
-  }
-
-  deleteSensor(): void {
-    if (!this.existingSensor) return;
-
-    const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType, this.existingSensor.id);
-    this.http.delete(this.apiUrl + sensorEndpoint).subscribe(() => {
-      console.log('Sensor deleted');
-      this.existingSensor = null;
+    this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
+      console.log(`${this.selectedSensorType} data updated:`, response);
+      this.sensorData.push(response);
+      this.newSensorData = { date: new Date().toISOString().slice(0, 16) };
     });
   }
 
@@ -118,45 +89,24 @@ export class PointDetailsComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  private getSensorEndpoint(sensorType: string, sensorId?: number): string {
+  private getSensorEndpoint(sensorType: string): string {
     switch (sensorType) {
       case 'Стан повітря':
-        return `/points/${this.pointId}/airstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/airstat`;
       case 'Стан водних ресурсів':
-        return `/points/${this.pointId}/waterstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/waterstat`;
       case 'Стан ґрунтів':
-        return `/points/${this.pointId}/soilstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/soilstat`;
       case 'Рівень радіації':
-        return `/points/${this.pointId}/radiationstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/radiationstat`;
       case 'Відходи':
-        return `/points/${this.pointId}/waste${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/waste`;
       case 'Економічний стан':
-        return `/points/${this.pointId}/economystat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/economystat`;
       case 'Стан здоров’я населення':
-        return `/points/${this.pointId}/healthstat${sensorId !== undefined ? `/${sensorId}` : ''}`;
+        return `/points/${this.pointId}/healthstat`;
       default:
         return '';
-    }
-  }
-
-  private createSensorModel(sensorType: string, pointId: number): any {
-    switch (sensorType) {
-      case 'Стан повітря':
-        return { point_id: pointId, dust: 0, no2: 0, so2: 0, co2: 0, pb: 0, bens: 0 };
-      case 'Стан водних ресурсів':
-        return { point_id: pointId, epSecurity: 0, sanChem: 0, radiation: 0 };
-      case 'Стан ґрунтів':
-        return { point_id: pointId, humus: 0, p2o5: 0, k20: 0, salinity: 0, chemPoll: 0, pH: 0 };
-      case 'Рівень радіації':
-        return { point_id: pointId, shortDecay: 0, mediumDecay: 0, air: 0, water: 0 };
-      case 'Відходи':
-        return { point_id: pointId, shortDecay: 0, mediumDecay: 0, air: 0, water: 0 };
-      case 'Економічний стан':
-        return { point_id: pointId, gdp: 0, freightTraffic: 0, passengerTraffic: 0, exportGoods: 0, importGoods: 0, wages: 0 };
-      case 'Стан здоров’я населення':
-        return { point_id: pointId, medicalDemographic: 0, morbidity: 0, disability: 0, physicalDevelopment: 0 };
-      default:
-        return {};
     }
   }
 }
