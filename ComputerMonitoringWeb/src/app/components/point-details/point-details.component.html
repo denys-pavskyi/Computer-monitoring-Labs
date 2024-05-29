@@ -16,27 +16,30 @@
     <div *ngIf="showGraph">
       <app-sensor-graphs [pointId]="pointId" [sensorType]="selectedSensorType" [parameter]="selectedParameter" [sensorData]="sensorData"></app-sensor-graphs>
     </div>
-    <table *ngIf="sensorData.length > 0" class="styled-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th *ngFor="let param of parameters">
-            {{ param }}
-            <button (click)="showSensorGraph(param)" class="icon-button">
-              <span class="fa-rotate-270" style="display: inline-block;">
-                <i class="fas fa-chart-bar fa-flip-vertical"></i>
-              </span>
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of sensorData">
-          <td>{{ data['date'] | date: 'short' }}</td>
-          <td *ngFor="let param of parameters">{{ data[param] }}</td>
-        </tr>
-      </tbody>
-    </table>
+
+    <div class="scrollable-table" [class.scrollable]="sensorData.length > 9">
+      <table *ngIf="sensorData.length > 0" class="styled-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th *ngFor="let param of parameters">
+              {{ param }}
+              <button (click)="showSensorGraph(param)" class="icon-button">
+                <span class="fa-rotate-270" style="display: inline-block;">
+                  <i class="fas fa-chart-bar fa-flip-vertical"></i>
+                </span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of sensorData">
+            <td>{{ data['date'] | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+            <td *ngFor="let param of parameters">{{ data[param] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div *ngIf="sensorData.length === 0">
       <p>No data available.</p>
@@ -44,7 +47,8 @@
 
     <div class="update-form">
       <h3>Enter New Data</h3>
-      <label>Date: <input type="datetime-local" [(ngModel)]="newSensorData['date']" /></label>
+      <input type="checkbox" [(ngModel)]="useCurrentDate" /> Use Current Date
+      <label *ngIf="!useCurrentDate">Date: <input type="datetime-local" [(ngModel)]="newSensorData['date']" /></label>
       <label *ngFor="let param of parameters">
         {{ param }}: <input type="number" [(ngModel)]="newSensorData[param]" />
       </label>

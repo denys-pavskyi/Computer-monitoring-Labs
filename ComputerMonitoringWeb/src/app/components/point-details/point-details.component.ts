@@ -43,6 +43,7 @@ export class PointDetailsComponent implements OnInit {
   sensorData: any[] = [];
   newSensorData: any = {};
   showGraph: boolean = false;
+  useCurrentDate: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
 
@@ -64,7 +65,7 @@ export class PointDetailsComponent implements OnInit {
       const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
       this.parameters = this.sensorParameters[this.selectedSensorType];
       this.http.get<any[]>(this.apiUrl + sensorEndpoint).subscribe(response => {
-        this.sensorData = response;
+        this.sensorData = response.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.existingSensor = response.length > 0;
         this.initializeNewSensorData();
       }, error => {
@@ -76,8 +77,8 @@ export class PointDetailsComponent implements OnInit {
   }
 
   initializeNewSensorData(): void {
-    const latestData = this.sensorData.length > 0 ? this.sensorData[this.sensorData.length - 1] : {};
-    this.newSensorData = { date: '', ...latestData };
+    const latestData = this.sensorData.length > 0 ? this.sensorData[0] : {};
+    this.newSensorData = { ...latestData };
     this.parameters.forEach(param => {
       if (!this.newSensorData[param]) {
         this.newSensorData[param] = 0;
@@ -86,16 +87,24 @@ export class PointDetailsComponent implements OnInit {
   }
 
   updateSensorData(): void {
-    if (!this.newSensorData['date']) return;
-
     const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
     this.newSensorData['point_id'] = this.pointId;
-
+  
+    if (!this.useCurrentDate && this.newSensorData['date']) {
+      const date = this.newSensorData['date'];
+      this.newSensorData['date'] = date.slice(0, 19);
+    } else {
+      delete this.newSensorData['date'];
+    }
+  
     this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
       console.log(`${this.selectedSensorType} data updated:`, response);
-      this.sensorData.push(response);
+      this.sensorData.unshift(response);
+      this.sensorData = this.sensorData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.initializeNewSensorData();
-      this.reloadSensorGraphs();
+      if(this.showGraph){
+        this.reloadSensorGraphs();
+      }
     });
   }
 
