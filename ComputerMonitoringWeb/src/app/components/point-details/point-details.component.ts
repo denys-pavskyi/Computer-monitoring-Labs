@@ -64,12 +64,23 @@ export class PointDetailsComponent implements OnInit {
       this.http.get<any[]>(this.apiUrl + sensorEndpoint).subscribe(response => {
         this.sensorData = response;
         this.existingSensor = response.length > 0;
+        this.initializeNewSensorData();
       }, error => {
         this.existingSensor = false;
       });
     } else {
       console.error('Unknown sensor type');
     }
+  }
+
+  initializeNewSensorData(): void {
+    const latestData = this.sensorData.length > 0 ? this.sensorData[this.sensorData.length - 1] : {};
+    this.newSensorData = { date: '', ...latestData };
+    this.parameters.forEach(param => {
+      if (!this.newSensorData[param]) {
+        this.newSensorData[param] = 0;
+      }
+    });
   }
 
   updateSensorData(): void {
@@ -81,7 +92,7 @@ export class PointDetailsComponent implements OnInit {
     this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
       console.log(`${this.selectedSensorType} data updated:`, response);
       this.sensorData.push(response);
-      this.newSensorData = { date: new Date().toISOString().slice(0, 16) };
+      this.initializeNewSensorData();
     });
   }
 

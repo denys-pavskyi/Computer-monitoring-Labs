@@ -35,7 +35,7 @@
       <h3>Enter New Data</h3>
       <label>Date: <input type="datetime-local" [(ngModel)]="newSensorData.date" /></label>
       <label *ngFor="let param of parameters">
-        {{ param }}: <input type="number" [(ngModel)]="newSensorData[param]" [value]="0" />
+        {{ param }}: <input type="number" [(ngModel)]="newSensorData[param]" />
       </label>
       <button (click)="updateSensorData()" class="save">Update</button>
     </div>
