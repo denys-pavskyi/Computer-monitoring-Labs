@@ -44,3 +44,24 @@ def delete_radiationstat_for_point(point_id, radiationstat_id):
     db.session.delete(radiationstat)
     db.session.commit()
     return jsonify({'message': 'radiationstat deleted'})
+
+@radiationstat.route('/points/<int:point_id>/radiationstat/clasification', methods=['GET'])
+def get_radiationstat_сlass_for_point(point_id):
+    radiationstat = RadiationStat.query.filter_by(point_id=point_id).order_by(RadiationStat.id.desc()).first()
+    if not radiationstat:
+        return {'integral_score': None, 'class': None}
+    index = (radiationstat.shortDecay + radiationstat.mediumDecay + radiationstat.air + radiationstat.water)/4
+
+    classification = 'Unknown'
+    if 0<=index<0.2:
+        classification = "Дуже добре"
+    elif 0.2 <= index < 0.3:
+        classification = "Добре"
+    elif 0.3 <= index < 0.6:
+        classification = "Середній"
+    elif 0.6 <= index < 1.2:
+        classification = "Поганий"
+    else:
+        classification = "Дуже поганий"
+
+    return jsonify({'index': index, 'class': classification})

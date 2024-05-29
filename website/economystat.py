@@ -44,3 +44,24 @@ def delete_economystat_for_point(point_id, economystat_id):
     db.session.delete(economystat)
     db.session.commit()
     return jsonify({'message': 'economystat deleted'})
+
+@economystat.route('/points/<int:point_id>/economystat/clasification', methods=['GET'])
+def get_economystat_сlass_for_point(point_id):
+    economystat = EconomyStat.query.filter_by(point_id=point_id).order_by(EconomyStat.id.desc()).first()
+    if not economystat:
+        return {'integral_score': None, 'class': None}
+    index = economystat.gdp/500 +economystat.exportGoods/10000 + economystat.passengerTraffic/2000 + economystat.freightTraffic/3000
+
+    classification = 'Unknown'
+    if 0<=index<5:
+        classification = "Дуже поганий"
+    elif 5 <= index < 10:
+        classification = "Поганий"
+    elif 10 <= index < 15:
+        classification = "Середній"
+    elif 15 <= index < 20:
+        classification = "Добре"
+    else:
+        classification = "Дуже добре"
+
+    return jsonify({'index': index, 'class': classification})

@@ -44,3 +44,24 @@ def delete_energystat_for_point(point_id, energystat_id):
     db.session.delete(energystat)
     db.session.commit()
     return jsonify({'message': 'energystat deleted'})
+
+@energystat.route('/points/<int:point_id>/energystat/clasification', methods=['GET'])
+def get_energystat_сlass_for_point(point_id):
+    energystat = EnergyStat.query.filter_by(point_id=point_id).order_by(EnergyStat.id.desc()).first()
+    if not energystat:
+        return {'integral_score': None, 'class': None}
+    index = energystat.water/50 + energystat.electricity/2.64 + energystat.gas/6.33 + energystat.thermalEnergy/5
+
+    classification = 'Unknown'
+    if 0<=index<1000:
+        classification = "Дуже добре"
+    elif 1000 <= index < 3000:
+        classification = "Добре"
+    elif 3000 <= index < 6000:
+        classification = "Середній"
+    elif 6000 <= index < 9000:
+        classification = "Поганий"
+    else:
+        classification = "Дуже поганий"
+
+    return jsonify({'index': index, 'class': classification})

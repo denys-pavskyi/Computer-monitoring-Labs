@@ -42,3 +42,24 @@ def delete_waterstat_for_point(point_id, waterstat_id):
     db.session.delete(waterstat)
     db.session.commit()
     return jsonify({'message': 'Waterstat deleted'})
+
+@waterstat.route('/points/<int:point_id>/waterstat/clasification', methods=['GET'])
+def get_waterstat_сlass_for_point(point_id):
+    waterstat = WaterStat.query.filter_by(point_id=point_id).order_by(WaterStat.id.desc()).first()
+    if not waterstat:
+        return {'integral_score': None, 'class': None}
+    index = waterstat.epSecurity/100 + waterstat.sanChem/100 + waterstat.radiation/10
+
+    classification = 'Unknown'
+    if 0<=index<0.2:
+        classification = "Дуже добре"
+    elif 0.2 <= index < 0.4:
+        classification = "Добре"
+    elif 0.4 <= index < 0.6:
+        classification = "Середній"
+    elif 0.6 <= index < 0.8:
+        classification = "Поганий"
+    else:
+        classification = "Дуже поганий"
+
+    return jsonify({'index': index, 'class': classification})
