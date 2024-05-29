@@ -125,6 +125,15 @@
   }
 }
 
+// Styles for the classification info in the popup
+.popup-content .classification {
+  margin-top: 10px;
+  border-radius: 5px;
+  padding: 10px;
+  color: #fff; /* Default text color */
+  text-align: center;
+}
+
 #map {
   height: 100%; /* Ensure the map takes the full height of the container */
   width: 100%;

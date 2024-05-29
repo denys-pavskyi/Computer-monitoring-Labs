@@ -80,7 +80,15 @@ export class MapComponent implements OnInit {
       this.clearMarkers();
       points.forEach(point => {
         const marker = L.marker([point.cord1, point.cord2], { icon: this.customIcon }).addTo(this.map);
-        marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
+        if (point.id !== undefined) {
+          this.fetchClassification(point.id).then(classification => {
+            marker.bindPopup(this.createExistingPopupContent(marker, point, classification)).openPopup();
+          }).catch(() => {
+            marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
+          });
+        } else {
+          marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
+        }
         this.markers.push(marker);
       });
     });
@@ -152,10 +160,40 @@ export class MapComponent implements OnInit {
     return div;
   }
 
-  private createExistingPopupContent(marker: L.Marker, point: Point): HTMLElement {
+  private createExistingPopupContent(marker: L.Marker, point: Point, classification?: { class: string, index: number }): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const title = L.DomUtil.create('h4', '', div);
     title.innerHTML = point.title;
+
+    if (classification) {
+      const classificationDiv = L.DomUtil.create('div', 'classification', div);
+      classificationDiv.innerHTML = `Class: ${classification.class}, Index: ${classification.index}`;
+      classificationDiv.style.borderRadius = '5px';
+      classificationDiv.style.padding = '10px';
+      classificationDiv.style.color = '#fff'; // Default text color
+      // Adjust background color based on classification
+      switch (classification.class) {
+        case 'Дуже добре':
+          classificationDiv.style.backgroundColor = 'green';
+          break;
+        case 'Добре':
+          classificationDiv.style.backgroundColor = 'lightgreen';
+          classificationDiv.style.color = '#000'; // Make text color black for better visibility
+          break;
+        case 'Середній':
+          classificationDiv.style.backgroundColor = 'yellow';
+          classificationDiv.style.color = '#000'; // Make text color black for better visibility
+          break;
+        case 'Поганий':
+          classificationDiv.style.backgroundColor = 'orange';
+          break;
+        case 'Дуже поганий':
+          classificationDiv.style.backgroundColor = 'red';
+          break;
+        default:
+          classificationDiv.style.backgroundColor = 'grey';
+      }
+    }
 
     const deleteButton = L.DomUtil.create('button', 'delete-button', div);
     deleteButton.innerHTML = 'Delete';
@@ -206,6 +244,16 @@ export class MapComponent implements OnInit {
     });
   }
 
+  private async fetchClassification(pointId: number): Promise<{ class: string, index: number }> {
+    const url = `${this.apiUrl}/points/${pointId}/${this.selectedClass}/classification`;
+    try {
+      const response = await this.http.get<{ class: string, index: number }>(url).toPromise();
+      return response || { class: 'Unknown', index: 0 }; // Default fallback value
+    } catch (error) {
+      return { class: 'Unknown', index: 0 }; // Handle error by returning a default value
+    }
+  }
+
   applyFilters(): void {
     this.loadPoints();
   }
@@ -220,6 +268,6 @@ export class MapComponent implements OnInit {
 
   applyClass(): void {
     console.log("Selected Class:", this.selectedClass);
-    // Implement logic to fetch and display data based on the selected class
+    this.loadPoints(); // Reload points to update classification
   }
 }
