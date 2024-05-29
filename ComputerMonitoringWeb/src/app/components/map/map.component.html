@@ -7,6 +7,7 @@
         <div class="bottom-text">Labs: 1-4</div>
       </div>
       <div class="center-section">
+        <!-- Filters Dropdown -->
         <div class="dropdown">
           <button class="dropbtn" (click)="toggleFilterMenu()">Filters</button>
           <div *ngIf="showFilterMenu" class="dropdown-content">
@@ -59,6 +60,61 @@
               </label>
             </div>
             <button class="apply-filters-button" (click)="applyFilters()">Apply Filters</button>
+          </div>
+        </div>
+
+        <!-- Classes Dropdown -->
+        <div class="dropdown classes-dropdown">
+          <button class="dropbtn" (click)="toggleClassMenu()">Classes</button>
+          <div *ngIf="showClassMenu" class="dropdown-content">
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="airstat" (change)="applyClass()" />
+                Air Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="waterstat" (change)="applyClass()" />
+                Water Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="soilstat" (change)="applyClass()" />
+                Soil Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="radiationstat" (change)="applyClass()" />
+                Radiation Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="waste" (change)="applyClass()" />
+                Waste
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="economyStat" (change)="applyClass()" />
+                Economy Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="healthStat" (change)="applyClass()" />
+                Health Stat
+              </label>
+            </div>
+            <div class="class-option">
+              <label>
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="energyStat" (change)="applyClass()" />
+                Energy Stat
+              </label>
+            </div>
           </div>
         </div>
       </div>

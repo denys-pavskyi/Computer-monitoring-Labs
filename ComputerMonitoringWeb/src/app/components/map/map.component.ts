@@ -20,6 +20,7 @@ export class MapComponent implements OnInit {
   customIcon: L.Icon | any;
   private apiUrl = environment.apiUrl;
   showFilterMenu: boolean = false;
+  showClassMenu: boolean = false; // New state for Class menu
   filters = {
     airstat: false,
     waterstat: false,
@@ -30,6 +31,7 @@ export class MapComponent implements OnInit {
     healthStat: false,
     energyStat: false
   };
+  selectedClass: string = ''; // New state for selected class
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -210,5 +212,14 @@ export class MapComponent implements OnInit {
 
   toggleFilterMenu(): void {
     this.showFilterMenu = !this.showFilterMenu;
+  }
+
+  toggleClassMenu(): void {
+    this.showClassMenu = !this.showClassMenu;
+  }
+
+  applyClass(): void {
+    console.log("Selected Class:", this.selectedClass);
+    // Implement logic to fetch and display data based on the selected class
   }
 }
