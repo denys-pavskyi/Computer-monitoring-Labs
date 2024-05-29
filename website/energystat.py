@@ -9,13 +9,20 @@ energystat = Blueprint('energystat', __name__)
 @energystat.route('/points/<int:point_id>/energystat', methods=['POST'])
 def create_energystat_for_point(point_id):
     data = request.get_json()
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_energystat = EnergyStat(
         point_id=point_id
         , water=data.get('water')
         , electricity=data.get('electricity')
         , gas=data.get('gas')
         , thermalEnergy=data.get('thermalEnergy')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_energystat)
     db.session.commit()

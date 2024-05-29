@@ -9,13 +9,21 @@ waste = Blueprint('waste', __name__)
 @waste.route('/points/<int:point_id>/waste', methods=['POST'])
 def create_waste_for_point(point_id):
     data = request.get_json()
+
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_waste = Waste(
         point_id=point_id
         , paper=data.get('paper')
         , plastic=data.get('plastic')
         , metal=data.get('metal')
         , product=data.get('product')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_waste)
     db.session.commit()

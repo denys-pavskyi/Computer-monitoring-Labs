@@ -9,13 +9,22 @@ soilstat = Blueprint('soilstat', __name__)
 @soilstat.route('/points/<int:point_id>/soilstat', methods=['POST'])
 def create_soilstat_for_point(point_id):
     data = request.get_json()
+
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
+        
     new_soilstat = SoilStat(
         point_id=point_id
         , humus=data.get('humus')
         , p2o5=data.get('p2o5')
         , k20=data.get('k20')
         , salinity=data.get('salinity')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_soilstat)
     db.session.commit()

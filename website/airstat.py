@@ -9,13 +9,20 @@ airstat = Blueprint('airstat', __name__)
 @airstat.route('/points/<int:point_id>/airstat', methods=['POST'])
 def create_airstat_for_point(point_id):
     data = request.get_json()
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_airstat = AirStat(
-        point_id=point_id
-        , dust=data.get('dust')
-        , no2=data.get('no2')
-        , so2=data.get('so2')
-        , co2=data.get('co2')
-        , date=datetime.now()
+        point_id=point_id,
+        dust=data.get('dust'),
+        no2=data.get('no2'),
+        so2=data.get('so2'),
+        co2=data.get('co2'),
+        date=dateFromRequest
     )
     db.session.add(new_airstat)
     db.session.commit()

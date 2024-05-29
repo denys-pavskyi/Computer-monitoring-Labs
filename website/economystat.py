@@ -9,13 +9,21 @@ economystat = Blueprint('economystat', __name__)
 @economystat.route('/points/<int:point_id>/economystat', methods=['POST'])
 def create_economystat_for_point(point_id):
     data = request.get_json()
+    
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_economystat = EconomyStat(
         point_id=point_id
         , gdp=data.get('gdp')
         , freightTraffic=data.get('freightTraffic')
         , passengerTraffic=data.get('passengerTraffic')
         , exportGoods=data.get('exportGoods')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_economystat)
     db.session.commit()

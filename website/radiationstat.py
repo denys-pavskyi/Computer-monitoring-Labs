@@ -9,13 +9,22 @@ radiationstat = Blueprint('radiationstat', __name__)
 @radiationstat.route('/points/<int:point_id>/radiationstat', methods=['POST'])
 def create_radiationstat_for_point(point_id):
     data = request.get_json()
+
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
+
     new_radiationstat = RadiationStat(
         point_id=point_id
         , shortDecay=data.get('shortDecay')
         , mediumDecay=data.get('mediumDecay')
         , air=data.get('air')
         , water=data.get('water')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_radiationstat)
     db.session.commit()

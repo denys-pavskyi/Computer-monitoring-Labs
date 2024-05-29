@@ -9,13 +9,21 @@ healthstat = Blueprint('healthstat', __name__)
 @healthstat.route('/points/<int:point_id>/healthstat', methods=['POST'])
 def create_healthstat_for_point(point_id):
     data = request.get_json()
+
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_healthstat = HealthStat(
         point_id=point_id
         , medicalDemographic=data.get('medicalDemographic')
         , morbidity=data.get('morbidity')
         , disability=data.get('disability')
         , physicalDevelopment=data.get('physicalDevelopment')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_healthstat)
     db.session.commit()

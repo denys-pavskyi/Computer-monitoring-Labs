@@ -9,12 +9,20 @@ waterstat = Blueprint('waterstat', __name__)
 @waterstat.route('/points/<int:point_id>/waterstat', methods=['POST'])
 def create_waterstat_for_point(point_id):
     data = request.get_json()
+
+    dateFromRequest = data.get('date')
+
+    if dateFromRequest:
+        dateFromRequest = datetime.strptime(dateFromRequest, '%Y-%m-%dT%H:%M:%S')
+    else:
+        dateFromRequest = datetime.now()
+
     new_waterstat = WaterStat(
         point_id=point_id
         , epSecurity=data.get('epSecurity')
         , sanChem=data.get('sanChem')
         , radiation=data.get('radiation')
-        , date=datetime.now()
+        , date=dateFromRequest
     )
     db.session.add(new_waterstat)
     db.session.commit()
