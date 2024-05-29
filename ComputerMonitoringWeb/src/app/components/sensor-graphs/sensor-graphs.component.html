@@ -1,5 +1,7 @@
-<div>
+<div class="chart-container">
     <h4>Graph for {{ sensorType }} - {{ parameter }}</h4>
-    <!-- Add your graph rendering logic here -->
-    <pre>{{ sensorData | json }}</pre>
+    <canvas baseChart
+            [data]="lineChartData"
+            type="line">
+    </canvas>
   </div>

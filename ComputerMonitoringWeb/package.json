@@ -25,7 +25,11 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "chart.js": "^3.8.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "date-fns": "^3.6.0",
     "leaflet": "^1.9.4",
+    "ng2-charts": "^3.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
