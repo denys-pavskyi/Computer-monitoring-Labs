@@ -52,3 +52,24 @@ def delete_healthstat_for_point(point_id, healthstat_id):
     db.session.delete(healthstat)
     db.session.commit()
     return jsonify({'message': 'healthstat deleted'})
+
+@healthstat.route('/points/<int:point_id>/healthstat/clasification', methods=['GET'])
+def get_healthstat_сlass_for_point(point_id):
+    healthstat = HealthStat.query.filter_by(point_id=point_id).order_by(HealthStat.id.desc()).first()
+    if not healthstat:
+        return {'integral_score': None, 'class': None}
+    index = healthstat.morbidity/1000
+
+    classification = 'Unknown'
+    if 0<=index<0.015:
+        classification = "Дуже добре"
+    elif 0.015 <= index < 0.02:
+        classification = "Добре"
+    elif 0.02 <= index < 0.03:
+        classification = "Середній"
+    elif 0.03 <= index < 0.04:
+        classification = "Поганий"
+    else:
+        classification = "Дуже поганий"
+
+    return jsonify({'index': index, 'class': classification})

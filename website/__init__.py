@@ -25,6 +25,7 @@ def create_app():
     from .economystat import economystat
     from .healthstat import healthstat
     from .energystat import energystat
+    from .documentation import documentation
 
     app.register_blueprint(point, url_prefix='/')
     app.register_blueprint(airstat, url_prefix='/')
@@ -35,8 +36,9 @@ def create_app():
     app.register_blueprint(economystat, url_prefix='/')
     app.register_blueprint(healthstat, url_prefix='/')
     app.register_blueprint(energystat, url_prefix='/')
+    app.register_blueprint(documentation, url_prefix='/')
 
-    from .models import Point, AirStat, WaterStat, SoilStat, RadiationStat, Waste, EnergyStat, HealthStat, EnergyStat
+    from .models import Point, AirStat, WaterStat, SoilStat, RadiationStat, Waste, EnergyStat, HealthStat, EnergyStat, Documentation
     
     with app.app_context():
         db.create_all()

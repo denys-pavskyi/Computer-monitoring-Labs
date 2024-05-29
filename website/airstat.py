@@ -52,3 +52,24 @@ def delete_airstat_for_point(point_id, airstat_id):
     db.session.delete(airstat)
     db.session.commit()
     return jsonify({'message': 'AirStat deleted'})
+
+@airstat.route('/points/<int:point_id>/airstat/clasification', methods=['GET'])
+def get_airstats_сlass_for_point(point_id):
+    airstat = AirStat.query.filter_by(point_id=point_id).order_by(AirStat.id.desc()).first()
+    if not airstat:
+        return {'integral_score': None, 'class': None}
+    index = airstat.dust/500+airstat.no2/2000 + airstat.so2/1000 + airstat.co2/50
+
+    classification = 'Unknown'
+    if 0<=index<0.4:
+        classification = "Дуже добре"
+    elif 0.4 <= index < 0.8:
+        classification = "Добре"
+    elif 0.8 <= index < 1.2:
+        classification = "Середній"
+    elif 1.2 <= index < 1.5:
+        classification = "Поганий"
+    else:
+        classification = "Дуже поганий"
+
+    return jsonify({'index': index, 'class': classification})

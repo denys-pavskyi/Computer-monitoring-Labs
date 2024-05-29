@@ -192,3 +192,19 @@ class EnergyStat(db.Model):
             'thermalEnergy': self.thermalEnergy,
             'date': self.date.strftime('%Y-%m-%dT%H:%M:%S')
         }
+
+class Documentation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    action = db.Column(db.String(100), nullable=False, unique=True)
+    document = db.Column(db.String(100), nullable=False)
+    classes = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'action': self.action,
+            'document': self.document,
+            'classes': self.classes,
+            'price': self.price
+        }
