@@ -51,7 +51,7 @@ def delete_waterstat_for_point(point_id, waterstat_id):
     db.session.commit()
     return jsonify({'message': 'Waterstat deleted'})
 
-@waterstat.route('/points/<int:point_id>/waterstat/clasification', methods=['GET'])
+@waterstat.route('/points/<int:point_id>/waterstat/classification', methods=['GET'])
 def get_waterstat_сlass_for_point(point_id):
     waterstat = WaterStat.query.filter_by(point_id=point_id).order_by(WaterStat.id.desc()).first()
     if not waterstat:

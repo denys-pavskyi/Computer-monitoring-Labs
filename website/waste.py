@@ -53,6 +53,6 @@ def delete_radiationstat_for_point(point_id, waste_id):
     db.session.commit()
     return jsonify({'message': 'waste deleted'})
 
-@waste.route('/points/<int:point_id>/waste/clasification', methods=['GET'])
+@waste.route('/points/<int:point_id>/waste/classification', methods=['GET'])
 def get_waste_сlass_for_point(point_id):
     return jsonify({'index': None, 'class': None})

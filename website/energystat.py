@@ -52,7 +52,7 @@ def delete_energystat_for_point(point_id, energystat_id):
     db.session.commit()
     return jsonify({'message': 'energystat deleted'})
 
-@energystat.route('/points/<int:point_id>/energystat/clasification', methods=['GET'])
+@energystat.route('/points/<int:point_id>/energystat/classification', methods=['GET'])
 def get_energystat_сlass_for_point(point_id):
     energystat = EnergyStat.query.filter_by(point_id=point_id).order_by(EnergyStat.id.desc()).first()
     if not energystat:

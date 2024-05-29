@@ -54,7 +54,7 @@ def delete_radiationstat_for_point(point_id, radiationstat_id):
     db.session.commit()
     return jsonify({'message': 'radiationstat deleted'})
 
-@radiationstat.route('/points/<int:point_id>/radiationstat/clasification', methods=['GET'])
+@radiationstat.route('/points/<int:point_id>/radiationstat/classification', methods=['GET'])
 def get_radiationstat_сlass_for_point(point_id):
     radiationstat = RadiationStat.query.filter_by(point_id=point_id).order_by(RadiationStat.id.desc()).first()
     if not radiationstat:

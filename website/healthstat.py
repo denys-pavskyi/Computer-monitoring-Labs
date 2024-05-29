@@ -53,7 +53,7 @@ def delete_healthstat_for_point(point_id, healthstat_id):
     db.session.commit()
     return jsonify({'message': 'healthstat deleted'})
 
-@healthstat.route('/points/<int:point_id>/healthstat/clasification', methods=['GET'])
+@healthstat.route('/points/<int:point_id>/healthstat/classification', methods=['GET'])
 def get_healthstat_сlass_for_point(point_id):
     healthstat = HealthStat.query.filter_by(point_id=point_id).order_by(HealthStat.id.desc()).first()
     if not healthstat:

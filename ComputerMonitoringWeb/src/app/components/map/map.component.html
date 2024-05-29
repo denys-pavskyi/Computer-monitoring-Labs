@@ -1,16 +1,70 @@
 <body>
-    <header class="header">
-      <div class="header-content">
-        <img src= "../../../assets/small_logo.ico" height="100px">  
-        <div class="left-section">
-          
-          <div class="top-text">Computer monitoring of eco-energy-economic processes and systems</div>
-          <div class="bottom-text">Labs: 1-4</div>
-        </div>
-        <div class="right-section"></div>
+  <header class="header">
+    <div class="header-content">
+      <img src="../../../assets/small_logo.ico" height="100px">
+      <div class="left-section">
+        <div class="top-text">Computer monitoring of eco-energy-economic processes and systems</div>
+        <div class="bottom-text">Labs: 1-4</div>
       </div>
-    </header>
-    <div class="map-container">
-      <div id="map"></div>
+      <div class="center-section">
+        <div class="dropdown">
+          <button class="dropbtn" (click)="toggleFilterMenu()">Filters</button>
+          <div *ngIf="showFilterMenu" class="dropdown-content">
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.airstat" />
+                Air Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.waterstat" />
+                Water Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.soilstat" />
+                Soil Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.radiationstat" />
+                Radiation Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.waste" />
+                Waste
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.economyStat" />
+                Economy Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.healthStat" />
+                Health Stat
+              </label>
+            </div>
+            <div class="filter-option">
+              <label>
+                <input type="checkbox" [(ngModel)]="filters.energyStat" />
+                Energy Stat
+              </label>
+            </div>
+            <button class="apply-filters-button" (click)="applyFilters()">Apply Filters</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </header>
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
 </body>

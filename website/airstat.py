@@ -53,7 +53,7 @@ def delete_airstat_for_point(point_id, airstat_id):
     db.session.commit()
     return jsonify({'message': 'AirStat deleted'})
 
-@airstat.route('/points/<int:point_id>/airstat/clasification', methods=['GET'])
+@airstat.route('/points/<int:point_id>/airstat/classification', methods=['GET'])
 def get_airstats_сlass_for_point(point_id):
     airstat = AirStat.query.filter_by(point_id=point_id).order_by(AirStat.id.desc()).first()
     if not airstat:

@@ -53,7 +53,7 @@ def delete_economystat_for_point(point_id, economystat_id):
     db.session.commit()
     return jsonify({'message': 'economystat deleted'})
 
-@economystat.route('/points/<int:point_id>/economystat/clasification', methods=['GET'])
+@economystat.route('/points/<int:point_id>/economystat/classification', methods=['GET'])
 def get_economystat_сlass_for_point(point_id):
     economystat = EconomyStat.query.filter_by(point_id=point_id).order_by(EconomyStat.id.desc()).first()
     if not economystat:

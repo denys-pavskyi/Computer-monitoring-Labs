@@ -54,7 +54,7 @@ def delete_soilstat_for_point(point_id, soilstat_id):
     db.session.commit()
     return jsonify({'message': 'soilstat deleted'})
 
-@soilstat.route('/points/<int:point_id>/soilstat/clasification', methods=['GET'])
+@soilstat.route('/points/<int:point_id>/soilstat/classification', methods=['GET'])
 def get_soilstat_сlass_for_point(point_id):
     soilstat = SoilStat.query.filter_by(point_id=point_id).order_by(SoilStat.id.desc()).first()
     if not soilstat:

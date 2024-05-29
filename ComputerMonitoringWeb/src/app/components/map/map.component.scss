@@ -1,105 +1,104 @@
-.map-container {
-  height: 100%;
-  #map {
-    height: 100%;
-    width: 100%;
-  }
-}
-
-body{
-  background-color: #8697C4;
-}
-
+// Original styles for map component
 .header {
-  height: 100px;
-  background-color: #8697C4;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  background-color: #3e3e3e;
+  padding: 10px;
   color: white;
-  font-size: 20px;
 }
 
 .header-content {
   display: flex;
-  justify-content: left;
-  width: 100%;
-  padding: 0 20px;
-}
-
-.left-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; 
-}
-
-.popup-content {
-  background-color: #f9f9f9;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.popup-content h4 {
-  margin: 0;
-  padding: 0 0 10px 0;
-  font-size: 16px;
-  color: #333;
-}
-
-.popup-content input.title-input {
-  margin-bottom: 10px;
-  padding: 5px;
-  width: calc(100% - 10px);
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-sizing: border-box;
-}
-
-.popup-content button {
-  margin: 5px 5px 0 0;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.popup-content .delete-button {
-  background-color: #e74c3c;
-  color: white;
-  transition: background-color 0.3s;
-}
-
-.popup-content .delete-button:hover {
-  background-color: #c0392b;
-}
-
-.popup-content .details-button {
-  background-color: #3498db;
-  color: white;
-  transition: background-color 0.3s;
-}
-
-.popup-content .details-button:hover {
-  background-color: #2980b9;
-}
-
-.popup-content .save-button {
-  background-color: #2ecc71;
-  color: white;
-  display: flex;
   align-items: center;
-  transition: background-color 0.3s;
 }
 
-.popup-content .save-button:hover {
-  background-color: #27ae60;
+.left-section, .center-section {
+  margin-left: 20px;
 }
 
-.popup-content .save-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 5px;
+.top-text {
+  font-size: 18px;
+}
+
+.bottom-text {
+  font-size: 14px;
+  color: #ddd;
+}
+
+.map-container {
+  height: 80vh;
+  width: 100%;
+  z-index: 0;
+  position: relative;
+}
+
+// Styles for the dropdown button and content
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  .dropbtn {
+    background-color: navy; /* Changed button color to navy */
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px; /* Customize width */
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+
+    .filter-option {
+      color: black; /* Customize text color */
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      background-color: #fff; /* Background color for filter options */
+      border-bottom: 1px solid #ddd;
+
+      label {
+        display: flex;
+        align-items: center;
+
+        input[type="checkbox"] {
+          margin-right: 10px;
+        }
+      }
+
+      &:hover {
+        background-color: #f1f1f1; /* Hover effect */
+      }
+    }
+
+    .apply-filters-button {
+      background-color: #4CAF50; /* Customize button color */
+      color: white;
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+
+      &:hover {
+        background-color: #45a049;
+      }
+    }
+  }
+
+  &:hover .dropdown-content {
+    display: block; /* Show the dropdown content on hover */
+  }
+}
+
+#map {
+  height: 100%; /* Ensure the map takes the full height of the container */
+  width: 100%;
+  z-index: 0; /* Ensure the map is beneath the dropdown */
 }

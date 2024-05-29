@@ -3,18 +3,33 @@ import * as L from 'leaflet';
 import { Point } from '../../../models/point';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class MapComponent implements OnInit {
   map: any;
   markers: L.Marker[] = [];
   customIcon: L.Icon | any;
   private apiUrl = environment.apiUrl;
+  showFilterMenu: boolean = false;
+  filters = {
+    airstat: false,
+    waterstat: false,
+    soilstat: false,
+    radiationstat: false,
+    waste: false,
+    economyStat: false,
+    healthStat: false,
+    energyStat: false
+  };
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -58,13 +73,41 @@ export class MapComponent implements OnInit {
   }
 
   private loadPoints(): void {
-    this.http.get<Point[]>(this.apiUrl + '/points').subscribe(points => {
+    const filterParams = this.buildFilterParams();
+    this.http.get<Point[]>(`${this.apiUrl}/points?${filterParams}`).subscribe(points => {
+      this.clearMarkers();
       points.forEach(point => {
         const marker = L.marker([point.cord1, point.cord2], { icon: this.customIcon }).addTo(this.map);
         marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
         this.markers.push(marker);
       });
     });
+  }
+
+  private clearMarkers(): void {
+    this.markers.forEach(marker => this.map.removeLayer(marker));
+    this.markers = [];
+  }
+
+  private buildFilterParams(): string {
+    const params = [];
+    const filterKeys: (keyof typeof this.filters)[] = [
+      'airstat', 
+      'waterstat', 
+      'soilstat', 
+      'radiationstat', 
+      'waste', 
+      'economyStat', 
+      'healthStat', 
+      'energyStat'
+    ];
+
+    for (const key of filterKeys) {
+      if (this.filters[key]) {
+        params.push(`${key}=true`);
+      }
+    }
+    return params.join('&');
   }
 
   private onMapClick(e: any): void {
@@ -116,7 +159,7 @@ export class MapComponent implements OnInit {
     deleteButton.innerHTML = 'Delete';
     deleteButton.onclick = () => {
       this.removeMarker(marker);
-      if(point.id != undefined){
+      if (point.id != undefined) {
         this.deletePoint(point.id);
       }
       this.map.closePopup();
@@ -132,9 +175,8 @@ export class MapComponent implements OnInit {
   }
 
   private saveMarkerData(marker: L.Marker, titleInput: HTMLInputElement): void {
-    
     let title = titleInput.value.trim();
-    if(typeof title=='undefined' || !title){
+    if (typeof title == 'undefined' || !title) {
       title = titleInput.placeholder;
     }
     const point: Point = {
@@ -160,5 +202,13 @@ export class MapComponent implements OnInit {
     this.http.delete(this.apiUrl + `/points/${id}`).subscribe(() => {
       alert(`Point with id ${id} deleted`);
     });
+  }
+
+  applyFilters(): void {
+    this.loadPoints();
+  }
+
+  toggleFilterMenu(): void {
+    this.showFilterMenu = !this.showFilterMenu;
   }
 }
