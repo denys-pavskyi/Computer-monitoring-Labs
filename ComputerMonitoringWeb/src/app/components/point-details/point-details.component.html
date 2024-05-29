@@ -14,10 +14,10 @@
     <h3>{{ selectedSensorType }} Data</h3>
 
     <div *ngIf="showGraph">
-      <app-sensor-graphs [pointId]="pointId" [sensorType]="selectedSensorType" [parameter]="selectedParameter" [sensorData]="sensorData"></app-sensor-graphs>
+      <app-sensor-graphs [pointId]="pointId" [sensorType]="selectedSensorType" [parameter]="selectedParameter" [sensorData]="getSortedSensorDataForGraph()"></app-sensor-graphs>
     </div>
 
-    <div class="scrollable-table" [class.scrollable]="sensorData.length > 9">
+    <div class="scrollable-table" [class.scrollable]="sensorData.length > 20">
       <table *ngIf="sensorData.length > 0" class="styled-table">
         <thead>
           <tr>

@@ -89,20 +89,22 @@ export class PointDetailsComponent implements OnInit {
   updateSensorData(): void {
     const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
     this.newSensorData['point_id'] = this.pointId;
-  
+
     if (!this.useCurrentDate && this.newSensorData['date']) {
-      const date = this.newSensorData['date'];
-      this.newSensorData['date'] = date.slice(0, 19);
+      let date = new Date(this.newSensorData['date']);
+      date = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.newSensorData['date'] = date.toISOString().slice(0, 19);
     } else {
       delete this.newSensorData['date'];
     }
-  
+
     this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
       console.log(`${this.selectedSensorType} data updated:`, response);
       this.sensorData.unshift(response);
       this.sensorData = this.sensorData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.initializeNewSensorData();
-      if(this.showGraph){
+      
+      if(this.showGraph) {
         this.reloadSensorGraphs();
       }
     });
@@ -143,5 +145,9 @@ export class PointDetailsComponent implements OnInit {
   showSensorGraph(parameter: string): void {
     this.selectedParameter = parameter;
     this.showGraph = true;
+  }
+
+  getSortedSensorDataForGraph(): any[] {
+    return this.sensorData.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 }
