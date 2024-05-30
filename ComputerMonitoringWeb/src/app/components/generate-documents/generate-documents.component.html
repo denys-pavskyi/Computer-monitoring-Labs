@@ -14,7 +14,7 @@
           <td><input type="checkbox" [(ngModel)]="doc.selected"></td>
           <td>{{ doc.action }}</td>
           <td>{{ doc.document }}</td>
-          <td>{{ doc.price | currency }}</td>
+          <td>{{ doc.price | currency: '₴' }}</td>
         </tr>
       </tbody>
     </table>

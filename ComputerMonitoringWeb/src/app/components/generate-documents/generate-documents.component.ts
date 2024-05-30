@@ -64,7 +64,8 @@ export class GenerateDocumentsComponent implements OnInit {
     }
 
     const doc = this.createDocument(selectedDocuments);
-    const date = new Date().toISOString().split('T')[0];
+    let curr_date = new Date().toISOString();
+    const date = curr_date.split('T')[0] + curr_date.split('T')[1];
     Packer.toBlob(doc).then(blob => {
       saveAs(blob, `recommended_measures_${date}.docx`);
     });
