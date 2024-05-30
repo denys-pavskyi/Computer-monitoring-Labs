@@ -108,7 +108,7 @@ button.back {
 
 .scrollable-table {
   &.scrollable {
-    max-height: 600px;
+    max-height: 500px;
     overflow-y: auto;
   }
 }
@@ -138,5 +138,16 @@ button.back {
   font-size: 20px;
   &:hover {
     color: darken(#e74c3c, 10%);
+  }
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: $danger-color;
+  cursor: pointer;
+  font-size: 20px;
+  &:hover {
+    color: darken($danger-color, 10%);
   }
 }

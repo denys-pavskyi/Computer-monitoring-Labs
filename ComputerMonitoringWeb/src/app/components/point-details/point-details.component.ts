@@ -68,7 +68,6 @@ export class PointDetailsComponent implements OnInit {
         this.sensorData = response.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.existingSensor = response.length > 0;
         this.initializeNewSensorData();
-        this.showGraph = false;
       }, error => {
         this.existingSensor = false;
       });
@@ -92,9 +91,8 @@ export class PointDetailsComponent implements OnInit {
     this.newSensorData['point_id'] = this.pointId;
 
     if (!this.useCurrentDate && this.newSensorData['date']) {
-      let date = new Date(this.newSensorData['date']);
-      date = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-      this.newSensorData['date'] = date.toISOString().slice(0, 19);
+      const date = new Date(this.newSensorData['date']);
+      this.newSensorData['date'] = date.toISOString().slice(0, 19); // Remove milliseconds and timezone
     } else {
       delete this.newSensorData['date'];
     }
@@ -105,6 +103,17 @@ export class PointDetailsComponent implements OnInit {
       this.sensorData = this.sensorData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.initializeNewSensorData();
       
+      if(this.showGraph) {
+        this.reloadSensorGraphs();
+      }
+    });
+  }
+
+  deleteRecord(recordId: number): void {
+    const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
+    this.http.delete(`${this.apiUrl + sensorEndpoint}/${recordId}`).subscribe(response => {
+      console.log(`Record deleted:`, response);
+      this.sensorData = this.sensorData.filter(data => data.id !== recordId);
       if(this.showGraph) {
         this.reloadSensorGraphs();
       }
