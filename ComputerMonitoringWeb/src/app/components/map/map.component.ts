@@ -82,12 +82,24 @@ export class MapComponent implements OnInit {
         const marker = L.marker([point.cord1, point.cord2], { icon: this.customIcon }).addTo(this.map);
         if (point.id !== undefined) {
           this.fetchClassification(point.id).then(classification => {
-            marker.bindPopup(this.createExistingPopupContent(marker, point, classification)).openPopup();
+            this.getStreetName(point.cord1, point.cord2).then(street => {
+              marker.bindPopup(this.createExistingPopupContent(marker, point, classification, street)).openPopup();
+            }).catch(() => {
+              marker.bindPopup(this.createExistingPopupContent(marker, point, classification)).openPopup();
+            });
+          }).catch(() => {
+            this.getStreetName(point.cord1, point.cord2).then(street => {
+              marker.bindPopup(this.createExistingPopupContent(marker, point, undefined, street)).openPopup();
+            }).catch(() => {
+              marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
+            });
+          });
+        } else {
+          this.getStreetName(point.cord1, point.cord2).then(street => {
+            marker.bindPopup(this.createExistingPopupContent(marker, point, undefined, street)).openPopup();
           }).catch(() => {
             marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
           });
-        } else {
-          marker.bindPopup(this.createExistingPopupContent(marker, point)).openPopup();
         }
         this.markers.push(marker);
       });
@@ -160,11 +172,16 @@ export class MapComponent implements OnInit {
     return div;
   }
 
-  private createExistingPopupContent(marker: L.Marker, point: Point, classification?: { class: string, index: number }): HTMLElement {
+  private createExistingPopupContent(marker: L.Marker, point: Point, classification?: { class: string, index: number }, street?: string): HTMLElement {
     const div = L.DomUtil.create('div', 'popup-content');
     const title = L.DomUtil.create('h4', '', div);
     title.innerHTML = point.title;
-
+  
+    if (street) {
+      const streetName = L.DomUtil.create('p', 'street-info', div);
+      streetName.innerHTML = `Street: ${street}`;
+    }
+  
     if (classification) {
       const classificationDiv = L.DomUtil.create('div', 'classification', div);
       classificationDiv.innerHTML = `Class: ${classification.class}, Index: ${classification.index}`;
@@ -194,7 +211,7 @@ export class MapComponent implements OnInit {
           classificationDiv.style.backgroundColor = 'grey';
       }
     }
-
+  
     const deleteButton = L.DomUtil.create('button', 'delete-button', div);
     deleteButton.innerHTML = 'Delete';
     deleteButton.onclick = () => {
@@ -204,15 +221,17 @@ export class MapComponent implements OnInit {
       }
       this.map.closePopup();
     };
-
+  
     const detailsButton = L.DomUtil.create('button', 'details-button', div);
     detailsButton.innerHTML = 'Details';
     detailsButton.onclick = () => {
       this.router.navigate(['/point-details', point.id]);
     };
-
+  
     return div;
   }
+
+
 
   private saveMarkerData(marker: L.Marker, titleInput: HTMLInputElement): void {
     let title = titleInput.value.trim();

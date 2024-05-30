@@ -139,3 +139,9 @@
   width: 100%;
   z-index: 0; /* Ensure the map is beneath the dropdown */
 }
+
+.popup-content .street-info {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
+}

@@ -63,13 +63,12 @@
           </div>
         </div>
 
-        <!-- Classes Dropdown -->
         <div class="dropdown classes-dropdown">
           <button class="dropbtn" (click)="toggleClassMenu()">Classes</button>
           <div *ngIf="showClassMenu" class="dropdown-content">
             <div class="class-option">
               <label>
-                <input type="radio" name="class" [(ngModel)]="selectedClass" value="airstat" (change)="applyClass()" />
+                <input type="radio" name="class" [(ngModel)]="selectedClass" value="airstat" (change)="applyClass()" checked />
                 Air Stat
               </label>
             </div>
