@@ -151,3 +151,22 @@ button.back {
     color: darken($danger-color, 10%);
   }
 }
+
+.rounded-info {
+  margin-top: 10px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  color: #333;
+  text-align: center;
+}
+
+.classification {
+  margin-top: 10px;
+
+  div {
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+  }
+}

@@ -4,11 +4,24 @@
   <h2>Point Details</h2>
   <p>ID: {{ pointId }}</p>
   <p>Title: {{ pointTitle }}</p>
+  <div *ngIf="streetName">
+    Street: {{ streetName }}
+  </div>
+
+
 
   <h3>Select Sensor Type</h3>
   <select [(ngModel)]="selectedSensorType" (change)="checkExistingSensor()">
     <option *ngFor="let sensor of sensorTypes" [value]="sensor">{{ sensor }}</option>
   </select>
+
+  
+  <!-- Display Classification -->
+  <div class="classification" *ngIf="classification">
+    <div [ngStyle]="{'background-color': getClassificationColor(classification.class), 'color': getTextColor(classification.class)}">
+      Class: {{ classification.class }} (Index: {{ classification.index }})
+    </div>
+  </div>
 
   <div *ngIf="existingSensor !== null" class="sensor-table">
     <h3>{{ selectedSensorType }} Data</h3>

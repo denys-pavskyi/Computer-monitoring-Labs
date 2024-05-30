@@ -44,12 +44,25 @@ export class PointDetailsComponent implements OnInit {
   newSensorData: any = {};
   showGraph: boolean = false;
   useCurrentDate: boolean = false;
+  streetName: string = '';
+  classification: { class: string, index: number } | null = null;
+
+  private classificationEndpoints: { [key: string]: string } = {
+    'Стан повітря': 'airstat',
+    'Стан водних ресурсів': 'waterstat',
+    'Стан ґрунтів': 'soilstat',
+    'Рівень радіації': 'radiationstat',
+    'Відходи': 'waste',
+    'Економічний стан': 'economystat',
+    'Стан здоров’я населення': 'healthstat'
+  };
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.pointId = +params['id'];
+      this.selectedSensorType = 'Стан повітря'; // Set default sensor type if needed
       this.loadPointDetails();
     });
   }
@@ -57,7 +70,37 @@ export class PointDetailsComponent implements OnInit {
   private loadPointDetails(): void {
     this.http.get<Point>(this.apiUrl + `/points/${this.pointId}`).subscribe(point => {
       this.pointTitle = point.title;
+      this.getStreetName(point.cord1, point.cord2).then(street => {
+        this.streetName = street;
+      });
+      this.fetchClassification(point.id!).then(classification => {
+        this.classification = classification;
+      });
     });
+  }
+
+  private async fetchClassification(pointId: number): Promise<{ class: string, index: number }> {
+    const classificationType = this.classificationEndpoints[this.selectedSensorType];
+    if (!classificationType) {
+      return { class: 'Unknown', index: 0 };
+    }
+    const url = `${this.apiUrl}/points/${pointId}/${classificationType}/classification`;
+    try {
+      const response = await this.http.get<{ class: string, index: number }>(url).toPromise();
+      return response || { class: 'Unknown', index: 0 }; // Default fallback value
+    } catch (error) {
+      return { class: 'Unknown', index: 0 }; // Handle error by returning a default value
+    }
+  }
+
+  private getStreetName(lat: number, lon: number): Promise<string> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=uk`;
+    return this.http.get<any>(url).toPromise().then(response => {
+      const address = response.address;
+      const road = address.road || address.display_name || 'Unknown street';
+      const houseNumber = address.house_number || '';
+      return houseNumber ? `${road}, ${houseNumber}` : road;
+    }).catch(() => 'Unknown street');
   }
 
   checkExistingSensor(): void {
@@ -68,6 +111,11 @@ export class PointDetailsComponent implements OnInit {
         this.sensorData = response.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.existingSensor = response.length > 0;
         this.initializeNewSensorData();
+        
+        // Fetch and update the classification whenever a new sensor type is selected
+        this.fetchClassification(this.pointId).then(classification => {
+          this.classification = classification;
+        });
       }, error => {
         this.existingSensor = false;
       });
@@ -89,14 +137,14 @@ export class PointDetailsComponent implements OnInit {
   updateSensorData(): void {
     const sensorEndpoint = this.getSensorEndpoint(this.selectedSensorType);
     this.newSensorData['point_id'] = this.pointId;
-
+  
     if (!this.useCurrentDate && this.newSensorData['date']) {
       const date = new Date(this.newSensorData['date']);
       this.newSensorData['date'] = date.toISOString().slice(0, 19); // Remove milliseconds and timezone
     } else {
       delete this.newSensorData['date'];
     }
-
+  
     this.http.post<any>(this.apiUrl + sensorEndpoint, this.newSensorData).subscribe(response => {
       console.log(`${this.selectedSensorType} data updated:`, response);
       this.sensorData.unshift(response);
@@ -106,6 +154,11 @@ export class PointDetailsComponent implements OnInit {
       if(this.showGraph) {
         this.reloadSensorGraphs();
       }
+  
+      // Fetch and update the classification after updating the sensor data
+      this.fetchClassification(this.pointId).then(classification => {
+        this.classification = classification;
+      });
     });
   }
 
@@ -159,5 +212,32 @@ export class PointDetailsComponent implements OnInit {
 
   getSortedSensorDataForGraph(): any[] {
     return this.sensorData.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  getClassificationColor(classification: string): string {
+    switch (classification) {
+      case 'Дуже добре':
+        return 'green';
+      case 'Добре':
+        return 'lightgreen';
+      case 'Середній':
+        return 'yellow';
+      case 'Поганий':
+        return 'orange';
+      case 'Дуже поганий':
+        return 'red';
+      default:
+        return 'grey';
+    }
+  }
+  
+  getTextColor(classification: string): string {
+    switch (classification) {
+      case 'Добре':
+      case 'Середній':
+        return '#000';
+      default:
+        return '#fff';
+    }
   }
 }
