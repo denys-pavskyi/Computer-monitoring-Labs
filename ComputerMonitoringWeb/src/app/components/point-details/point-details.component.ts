@@ -114,7 +114,7 @@ export class PointDetailsComponent implements OnInit {
         this.sensorData = response.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.existingSensor = response.length > 0;
         this.initializeNewSensorData();
-        
+        this.showGraph = false;
         // Fetch and update the classification whenever a new sensor type is selected
         this.fetchClassification(this.pointId).then(classification => {
           this.classification = classification;
