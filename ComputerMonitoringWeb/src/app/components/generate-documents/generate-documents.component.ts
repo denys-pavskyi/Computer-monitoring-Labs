@@ -25,9 +25,40 @@ export class GenerateDocumentsComponent implements OnInit {
   }
 
   fetchDocuments(): void {
-    const url = `${this.apiUrl}/documentations?sensorType=${this.sensorType}`;
+    const url = `${this.apiUrl}/documentations`;
     this.http.get<Documentation[]>(url).subscribe(response => {
-      this.documents = response;
+      this.documents = response.filter(doc => doc.classes === this.getSensorClass(this.sensorType));
     });
+  }
+
+  getSensorClass(sensorType: string): string {
+    switch (sensorType) {
+      case 'Стан повітря':
+        return 'air';
+      case 'Стан водних ресурсів':
+        return 'water';
+      case 'Стан ґрунтів':
+        return 'soil';
+      case 'Рівень радіації':
+        return 'radiation';
+      case 'Відходи':
+        return 'waste';
+      case 'Економічний стан':
+        return 'economy';
+      case 'Стан здоров’я населення':
+        return 'health';
+      default:
+        return '';
+    }
+  }
+
+  downloadDoc(): void {
+    const selectedDocuments = this.documents.filter(doc => doc.selected);
+    // Logic to download selected documents as .doc
+  }
+
+  downloadXls(): void {
+    const selectedDocuments = this.documents.filter(doc => doc.selected);
+    // Logic to download selected documents as .xls
   }
 }

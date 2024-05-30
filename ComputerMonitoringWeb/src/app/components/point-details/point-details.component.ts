@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Point } from '../../../models/point';
@@ -49,6 +49,9 @@ export class PointDetailsComponent implements OnInit {
   streetName: string = '';
   classification: { class: string, index: number } | null = null;
 
+  @ViewChild('generateDocumentsContainer', { read: ViewContainerRef, static: true }) container!: ViewContainerRef;
+
+
   private classificationEndpoints: { [key: string]: string } = {
     'Стан повітря': 'airstat',
     'Стан водних ресурсів': 'waterstat',
@@ -59,7 +62,7 @@ export class PointDetailsComponent implements OnInit {
     'Стан здоров’я населення': 'healthstat'
   };
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) { }
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient, private resolver: ComponentFactoryResolver) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -210,14 +213,6 @@ export class PointDetailsComponent implements OnInit {
     this.showGraph = true;
   }
 
-  openGenerateDocumentsModal(): void {
-    this.showModal = true;
-  }
-
-  closeGenerateDocumentsModal(): void {
-    this.showModal = false;
-  }
-
   getSortedSensorDataForGraph(): any[] {
     return this.sensorData.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
@@ -248,4 +243,24 @@ export class PointDetailsComponent implements OnInit {
         return '#fff';
     }
   }
+
+  openGenerateDocumentsModal(): void {
+    this.showModal = true;
+    this.loadGenerateDocumentsComponent();
+  }
+
+  closeGenerateDocumentsModal(): void {
+    this.showModal = false;
+    this.container.clear();
+  }
+
+  loadGenerateDocumentsComponent(): void {
+    this.container.clear();
+    const factory = this.resolver.resolveComponentFactory(GenerateDocumentsComponent);
+    const componentRef = this.container.createComponent(factory);
+    componentRef.instance.pointId = this.pointId;
+    componentRef.instance.sensorType = this.selectedSensorType;
+  }
+
+
 }
