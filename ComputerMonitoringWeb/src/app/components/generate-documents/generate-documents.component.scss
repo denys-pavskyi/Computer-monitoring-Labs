@@ -41,3 +41,12 @@
   button:hover {
     background-color: #45a049;
   }
+  
+  /* Style for .doc button */
+  .buttons button:first-child {
+    background-color: navy;
+  }
+  
+  .buttons button:first-child:hover {
+    background-color: darkblue;
+  }

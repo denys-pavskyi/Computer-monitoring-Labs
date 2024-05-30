@@ -260,6 +260,7 @@ export class PointDetailsComponent implements OnInit {
     const componentRef = this.container.createComponent(factory);
     componentRef.instance.pointId = this.pointId;
     componentRef.instance.sensorType = this.selectedSensorType;
+    componentRef.instance.pointTitle = this.pointTitle;
   }
 
 

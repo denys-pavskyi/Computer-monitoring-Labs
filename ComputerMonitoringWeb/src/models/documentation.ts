@@ -3,10 +3,10 @@ export class Documentation {
     action: string;
     document: string;
     classes: string;
-    price?: number; // Optional because it can be null
+    price: number;
     selected?: boolean; // Optional property for UI selection
   
-    constructor(action: string, document: string, classes: string, price?: number, selected?: boolean, id?: number) {
+    constructor(action: string, document: string, classes: string, price: number, selected?: boolean, id?: number) {
       this.id = id;
       this.action = action;
       this.document = document;
