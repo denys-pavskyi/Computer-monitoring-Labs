@@ -126,6 +126,57 @@ export class GenerateDocumentsComponent implements OnInit {
 
   downloadXls(): void {
     const selectedDocuments = this.documents.filter(doc => doc.selected);
-    // Logic to download selected documents as .xls
+    if (selectedDocuments.length === 0) {
+      alert('Please select at least one document.');
+      return;
+    }
+
+    const date = new Date().toISOString().split('T')[0];
+    const ws_data = [
+      [`Рішенням керівника підприємства ${this.pointTitle} сформовано список заходів, які потрібно запровадити на установі:`],
+      ...selectedDocuments.map((doc, index) => [
+        `${index + 1}) ${doc.action}, підставою якого є ${doc.document}`,
+        doc.price.toFixed(2)
+      ]),
+      [`Загальна вартість:`, selectedDocuments.reduce((sum, doc) => sum + (doc.price || 0), 0).toFixed(2)],
+      [`Дата: ${new Date().toLocaleDateString()}`]
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+    // Format cells
+    const range = XLSX.utils.decode_range(ws['!ref']!);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell_address = { c: C, r: R };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!ws[cell_ref]) continue;
+        ws[cell_ref].s = {
+          font: { name: "Times New Roman", sz: 12 },
+          alignment: { horizontal: "center", vertical: "center", wrapText: true },
+          border: {
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } }
+          }
+        };
+      }
+    }
+
+    // Adjust column widths dynamically based on content
+    const colWidths = ws_data[0].map((_, colIndex) => {
+      const column = ws_data.map(row => row[colIndex]);
+      const maxLength = Math.max(...column.map(cell => cell.toString().length));
+      return { wch: maxLength };
+    });
+    ws['!cols'] = colWidths;
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Recommended Measures');
+
+    const xlsData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([xlsData], { type: 'application/octet-stream' });
+    saveAs(blob, `recommended_measures_${date}.xlsx`);
   }
 }
