@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>Recommended Documents for {{ sensorType }}</h2>
+    <table *ngIf="documents.length > 0">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Document</th>
+          <th>Classes</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let doc of documents">
+          <td>{{ doc.action }}</td>
+          <td>{{ doc.document }}</td>
+          <td>{{ doc.classes }}</td>
+          <td>{{ doc.price | currency }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="documents.length === 0">No documents available for this sensor type.</p>
+  </div>

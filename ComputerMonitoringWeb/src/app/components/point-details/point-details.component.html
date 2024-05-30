@@ -23,6 +23,17 @@
     </div>
   </div>
 
+  <!-- Recomended measures -->
+  <button (click)="openGenerateDocumentsModal()" class="recommended-measures-button">
+    Recommended Measures
+  </button>
+  <div class="modal" [ngClass]="{'show': showModal}">
+    <div class="modal-content">
+      <span class="close" (click)="closeGenerateDocumentsModal()">&times;</span>
+      <app-generate-documents [pointId]="pointId" [sensorType]="selectedSensorType"></app-generate-documents>
+    </div>
+  </div>
+
   <div *ngIf="existingSensor !== null" class="sensor-table">
     <h3>{{ selectedSensorType }} Data</h3>
 
@@ -43,7 +54,7 @@
                 </span>
               </button>
             </th>
-            <th>Remove</th>
+            <th> </th>
           </tr>
         </thead>
         <tbody>

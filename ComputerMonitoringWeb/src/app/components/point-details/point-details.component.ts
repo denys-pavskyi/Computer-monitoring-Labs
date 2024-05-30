@@ -6,13 +6,14 @@ import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SensorGraphsComponent } from '../sensor-graphs/sensor-graphs.component';
+import { GenerateDocumentsComponent } from '../generate-documents/generate-documents.component';
 
 @Component({
   selector: 'app-point-details',
   templateUrl: './point-details.component.html',
   styleUrls: ['./point-details.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, SensorGraphsComponent]
+  imports: [CommonModule, FormsModule, SensorGraphsComponent, GenerateDocumentsComponent]
 })
 export class PointDetailsComponent implements OnInit {
   pointId: number = -1;
@@ -20,6 +21,7 @@ export class PointDetailsComponent implements OnInit {
   private apiUrl = environment.apiUrl;
   selectedSensorType: string = "";
   selectedParameter: string = "";
+  showModal: boolean = false;
   sensorTypes: string[] = [
     'Стан повітря',
     'Стан водних ресурсів',
@@ -73,9 +75,7 @@ export class PointDetailsComponent implements OnInit {
       this.getStreetName(point.cord1, point.cord2).then(street => {
         this.streetName = street;
       });
-      this.fetchClassification(point.id!).then(classification => {
-        this.classification = classification;
-      });
+      this.checkExistingSensor();
     });
   }
 
@@ -208,6 +208,14 @@ export class PointDetailsComponent implements OnInit {
   showSensorGraph(parameter: string): void {
     this.selectedParameter = parameter;
     this.showGraph = true;
+  }
+
+  openGenerateDocumentsModal(): void {
+    this.showModal = true;
+  }
+
+  closeGenerateDocumentsModal(): void {
+    this.showModal = false;
   }
 
   getSortedSensorDataForGraph(): any[] {
